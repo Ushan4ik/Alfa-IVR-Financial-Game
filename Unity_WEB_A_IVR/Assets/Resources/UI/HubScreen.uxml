@@ -1,0 +1,174 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <Style src="project://database/Assets/UI/Styles/Hub.uss?fileID=7433441132597879392&amp;guid=9317b0bb0e4a458ba3cae1ea5db3b068&amp;type=3" />
+    <ui:VisualElement name="HubScreen" class="hub-screen">
+        <ui:VisualElement class="hub-shell">
+            <ui:VisualElement class="hub-topbar">
+                <ui:VisualElement class="hub-brand">
+                    <ui:Label text="A" class="hub-logo" />
+                    <ui:Label text="Игра о финансах" class="hub-brand-text" />
+                </ui:VisualElement>
+                <ui:Label name="top-score" text="0 очков" class="hub-score-pill" />
+            </ui:VisualElement>
+
+            <ui:ScrollView name="hub-scroll" class="hub-scroll">
+                <ui:VisualElement name="tab-home" class="hub-page">
+                    <ui:VisualElement class="hub-greeting-row">
+                        <ui:VisualElement>
+                            <ui:Label name="home-greeting" text="Привет!" class="hub-title" />
+                            <ui:Label text="Продолжим путь к финансовым знаниям?" class="hub-subtitle" />
+                        </ui:VisualElement>
+                        <ui:Button name="home-avatar" text="А" class="hub-avatar" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hub-feature">
+                        <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
+                        <ui:Label text="Твоя дорожка знаний" class="hub-feature-title" />
+                        <ui:Label text="Проходи темы и закрепляй их в квизе" class="hub-feature-copy" />
+                        <ui:Button name="home-start-quiz" text="Пройти квиз →" class="hub-feature-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hub-stats-row">
+                        <ui:VisualElement class="hub-stat">
+                            <ui:Label name="home-score" text="0" class="hub-stat-value" />
+                            <ui:Label text="очков знаний" class="hub-stat-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="hub-stat">
+                            <ui:Label name="home-lessons" text="0/4" class="hub-stat-value" />
+                            <ui:Label text="тем пройдено" class="hub-stat-label" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="home-market" text="Виртуальная биржа →" class="hub-outline" />
+                    <ui:Label text="Темы для изучения" class="hub-section-title" />
+                    <ui:Button name="home-savings" text="01    Накопления                       →" class="hub-path-item" />
+                    <ui:Button name="home-deposits" text="02    Вклады                                →" class="hub-path-item" />
+                    <ui:Button name="home-insurance" text="03    Страхование                     →" class="hub-path-item" />
+                    <ui:Button name="home-credits" text="04    Кредиты                               →" class="hub-path-item" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="tab-learn" class="hub-page">
+                    <ui:Label text="Твои уроки" class="hub-title" />
+                    <ui:Label text="Разборы ошибок и темы для закрепления" class="hub-subtitle" />
+                    <ui:VisualElement name="lesson-list" class="hub-list">
+                        <ui:Button name="learning-diagnostic" text="Пройти вводный тест →" class="hub-primary" style="display: none;" />
+                        <ui:Label name="learning-knowledge" text="" class="hub-muted" />
+                        <ui:VisualElement class="hub-section-row">
+                            <ui:Label text="Лично для тебя" class="hub-section-title" />
+                            <ui:Button name="learning-refresh" text="Обновить" class="hub-text-button" />
+                        </ui:VisualElement>
+                        <ui:Label name="learning-status" text="" class="hub-muted" />
+                        <ui:VisualElement name="personal-lesson-list" class="hub-list" />
+                        <ui:Label text="Все темы" class="hub-section-title" />
+                        <ui:Button name="learn-savings" text="Накопления" class="hub-lesson-card" />
+                        <ui:Button name="learn-deposits" text="Вклады" class="hub-lesson-card" />
+                        <ui:Button name="learn-insurance" text="Страхование" class="hub-lesson-card" />
+                        <ui:Button name="learn-credits" text="Кредиты" class="hub-lesson-card" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="lesson-detail" class="hub-lesson-detail" style="display: none;">
+                        <ui:Button name="lesson-back" text="‹  Все темы" class="hub-text-button" />
+                        <ui:Label name="lesson-title" text="" class="hub-title" />
+                        <ui:Label name="lesson-summary" text="" class="hub-subtitle" />
+                        <ui:VisualElement class="hub-reading-card">
+                            <ui:Label name="lesson-body" text="" class="hub-reading-text" />
+                        </ui:VisualElement>
+                        <ui:Button name="lesson-quiz" text="Проверить знания →" class="hub-primary" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="tab-quests" class="hub-page">
+                    <ui:Label text="Задания" class="hub-title" />
+                    <ui:Label text="Цели растут вместе с твоим прогрессом" class="hub-subtitle" />
+                    <ui:VisualElement class="hub-quest-banner">
+                        <ui:Label text="ТВОЙ ПРОГРЕСС" class="hub-feature-eyebrow" />
+                        <ui:Label name="quest-summary" text="0 из 3 заданий" class="hub-feature-title" />
+                        <ui:Label text="Новые знания открывают новые цели" class="hub-feature-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hub-filters">
+                        <ui:Button name="quest-all" text="Все" class="hub-filter hub-filter-active" />
+                        <ui:Button name="quest-active" text="В процессе" class="hub-filter" />
+                        <ui:Button name="quest-done" text="Готово" class="hub-filter" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="quest-list" class="hub-list" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="tab-rating" class="hub-page">
+                    <ui:Label text="Рейтинг" class="hub-title" />
+                    <ui:Label text="Игроки по стоимости виртуального портфеля" class="hub-subtitle" />
+                    <ui:VisualElement name="rating-podium" class="hub-podium" />
+                    <ui:VisualElement class="hub-section-row">
+                        <ui:Label text="Все игроки" class="hub-section-title" />
+                        <ui:Button name="rating-refresh" text="Обновить" class="hub-text-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="rating-list" class="hub-list" />
+                    <ui:Label name="rating-status" text="" class="hub-muted" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="tab-profile" class="hub-page">
+                    <ui:Label text="Профиль" class="hub-title" />
+                    <ui:VisualElement class="hub-profile-head">
+                        <ui:Label text="А" class="hub-avatar hub-avatar-large" />
+                        <ui:VisualElement>
+                            <ui:Label name="profile-name" text="Игрок" class="hub-section-title" />
+                            <ui:Label name="profile-email" text="" class="hub-muted" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hub-profile-card">
+                        <ui:Label name="profile-level" text="Уровень 1" class="hub-profile-value" />
+                        <ui:Label name="profile-score" text="0 очков" class="hub-profile-value" />
+                        <ui:Label name="profile-interests" text="Интересы: —" class="hub-muted" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hub-profile-card">
+                        <ui:Label text="Виртуальный портфель" class="hub-section-title" />
+                        <ui:Label name="profile-portfolio" text="Загрузка..." class="hub-profile-value" />
+                    </ui:VisualElement>
+                    <ui:Button name="profile-quiz" text="Пройти квиз →" class="hub-primary" />
+                    <ui:Button name="profile-market" text="Открыть биржу" class="hub-outline" />
+                    <ui:Button name="profile-interests-button" text="Изменить интересы" class="hub-outline" />
+                    <ui:Button name="profile-logout" text="Выйти из аккаунта" class="hub-text-button hub-logout" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="tab-market" class="hub-page">
+                    <ui:Button name="market-back" text="‹  На главную" class="hub-text-button" />
+                    <ui:Label text="Виртуальная биржа" class="hub-title" />
+                    <ui:Label text="Тренируй решения на игровых деньгах" class="hub-subtitle" />
+                    <ui:VisualElement class="hub-market-balance">
+                        <ui:Label name="market-day" text="День 0" class="hub-muted" />
+                        <ui:Label name="market-cash" text="Деньги: —" class="hub-profile-value" />
+                        <ui:Label name="market-total" text="Капитал: —" class="hub-profile-value" />
+                    </ui:VisualElement>
+                    <ui:Label text="Акции" class="hub-section-title" />
+                    <ui:VisualElement name="market-stock-list" class="hub-list" />
+                    <ui:VisualElement name="market-detail" class="hub-profile-card" style="display: none;">
+                        <ui:Label name="market-selected" text="" class="hub-section-title" />
+                        <ui:Label name="market-position" text="" class="hub-muted" />
+                        <ui:IntegerField name="market-quantity" label="Количество" value="1" class="hub-market-quantity" />
+                        <ui:VisualElement class="hub-market-actions">
+                            <ui:Button name="market-buy" text="Купить" class="hub-market-action hub-market-buy" />
+                            <ui:Button name="market-sell" text="Продать" class="hub-market-action" />
+                            <ui:Button name="market-short" text="Шорт" class="hub-market-action" />
+                            <ui:Button name="market-cover" text="Закрыть шорт" class="hub-market-action" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="market-status" text="" class="hub-muted" />
+                    <ui:Label text="Новости рынка" class="hub-section-title" />
+                    <ui:VisualElement name="market-news-list" class="hub-list" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <ui:VisualElement name="hub-nav" class="hub-nav">
+                <ui:Button name="nav-home" text="Главная" class="hub-nav-button" />
+                <ui:Button name="nav-learn" text="Уроки" class="hub-nav-button" />
+                <ui:Button name="nav-quests" text="Задания" class="hub-nav-button" />
+                <ui:Button name="nav-rating" text="Рейтинг" class="hub-nav-button" />
+                <ui:Button name="nav-profile" text="Профиль" class="hub-nav-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="hub-result-overlay" class="hub-overlay" style="display: none;">
+            <ui:VisualElement class="hub-result-card">
+                <ui:Label name="hub-result-title" text="Квиз завершён" class="hub-title" />
+                <ui:Label name="hub-result-score" text="+0 очков" class="hub-result-score" />
+                <ui:Label name="hub-result-message" text="" class="hub-subtitle" />
+                <ui:Button name="hub-result-close" text="Продолжить" class="hub-primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

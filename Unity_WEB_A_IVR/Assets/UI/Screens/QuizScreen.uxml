@@ -1,0 +1,84 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/Quiz.uss?fileID=7433441132597879392&amp;guid=4d91fa17421e47da94bc1d97c0f1d9a1&amp;type=3" />
+    <ui:VisualElement name="QuizScreen" class="quiz-screen">
+        <ui:VisualElement class="quiz-shell">
+            <ui:VisualElement class="quiz-header">
+                <ui:Button name="exit-btn" text="‹" class="quiz-back" />
+                <ui:VisualElement class="quiz-brand">
+                    <ui:Label text="A" class="quiz-logo" />
+                    <ui:Label text="Игра о финансах" class="quiz-brand-name" />
+                </ui:VisualElement>
+                <ui:Label name="score-text" text="0 очков" class="quiz-score-pill" />
+            </ui:VisualElement>
+
+            <ui:ScrollView name="quiz-scroll" class="quiz-scroll">
+                <ui:VisualElement class="quiz-content">
+                    <ui:VisualElement class="quiz-intro">
+                        <ui:Label name="quiz-topic" text="Финансовый квиз" class="quiz-title" />
+                        <ui:Label text="Проверь знания и заработай очки" class="quiz-subtitle" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="quiz-progress-row">
+                        <ui:Label name="progress-text" text="Загрузка вопросов" class="quiz-progress-text" />
+                        <ui:Label name="progress-percent" text="0%" class="quiz-progress-percent" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="quiz-progress-track">
+                        <ui:VisualElement name="quiz-progress-fill" class="quiz-progress-fill" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="quiz-question-card">
+                        <ui:Label name="question-number" text="ВОПРОС 01" class="quiz-question-number" />
+                        <ui:Label name="question-text" text="Загружаю вопросы..." class="quiz-question-text" />
+                    </ui:VisualElement>
+
+                    <ui:Label text="Выбери один ответ" class="quiz-answer-heading" />
+                    <ui:VisualElement class="quiz-answers">
+                        <ui:Button name="answer-0" text="А  Ответ 1" class="quiz-answer" />
+                        <ui:Button name="answer-1" text="Б  Ответ 2" class="quiz-answer" />
+                        <ui:Button name="answer-2" text="В  Ответ 3" class="quiz-answer" />
+                        <ui:Button name="answer-3" text="Г  Ответ 4" class="quiz-answer" />
+                    </ui:VisualElement>
+
+                    <ui:Label name="feedback-text" text="" class="quiz-feedback" />
+                    <ui:Button name="next-btn" text="Следующий вопрос →" class="quiz-primary" style="display: none;" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+            <ui:VisualElement class="quiz-footer">
+                <ui:Label text="Очки в профиль — за впервые решённые вопросы" class="quiz-footer-hint" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="pause-overlay" class="quiz-overlay" style="display: none;">
+            <ui:VisualElement class="quiz-result-card">
+                <ui:Label text="Ⅱ" class="quiz-result-symbol" />
+                <ui:Label text="Квиз на паузе" class="quiz-result-title" />
+                <ui:Label text="Твои ответы и набранные очки останутся здесь, пока ты продолжаешь квиз." class="quiz-result-message" />
+                <ui:Button name="pause-resume-btn" text="Продолжить →" class="quiz-primary" />
+                <ui:Button name="pause-exit-btn" text="Выйти в меню" class="quiz-outline" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="results-overlay" class="quiz-overlay" style="display: none;">
+            <ui:VisualElement class="quiz-result-card">
+                <ui:Label name="result-emoji" text="★" class="quiz-result-symbol" />
+                <ui:Label name="result-title" text="Квиз завершён" class="quiz-result-title" />
+                <ui:Label name="result-message" text="" class="quiz-result-message" />
+                <ui:VisualElement class="quiz-result-stats">
+                    <ui:VisualElement class="quiz-result-row">
+                        <ui:Label text="Правильных ответов" class="quiz-result-label" />
+                        <ui:Label name="result-correct" text="0/0" class="quiz-result-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="quiz-result-row">
+                        <ui:Label text="Очки за квиз" class="quiz-result-label" />
+                        <ui:Label name="result-score" text="+0" class="quiz-result-value quiz-result-score" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="quiz-result-row">
+                        <ui:Label text="Результат" class="quiz-result-label" />
+                        <ui:Label name="result-status" text="—" class="quiz-result-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="result-continue-btn" text="Вернуться в меню →" class="quiz-primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

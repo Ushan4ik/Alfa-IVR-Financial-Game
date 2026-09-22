@@ -1,0 +1,624 @@
+.hub-screen {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    align-items: center;
+    background-color: rgb(232, 232, 234);
+}
+
+.hub-shell {
+    width: 100%;
+    max-width: 440px;
+    height: 100%;
+    background-color: rgb(252, 251, 252);
+}
+
+.hub-topbar {
+    height: 56px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: white;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(237, 235, 238);
+}
+
+.hub-brand {
+    flex-direction: row;
+    align-items: center;
+}
+
+.hub-logo {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    background-color: rgb(242, 0, 48);
+    border-radius: 7px;
+    color: white;
+    font-size: 19px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.hub-brand-text {
+    color: rgb(31, 31, 34);
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.hub-score-pill {
+    padding: 6px 10px;
+    border-radius: 16px;
+    background-color: rgb(238, 255, 229);
+    color: rgb(43, 143, 37);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.hub-scroll {
+    width: 100%;
+    flex-grow: 1;
+}
+
+.hub-page {
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 24px;
+    padding-bottom: 28px;
+}
+
+.hub-title {
+    color: rgb(24, 24, 27);
+    font-size: 27px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 5px;
+}
+
+.hub-subtitle {
+    color: rgb(118, 115, 120);
+    font-size: 13px;
+    white-space: normal;
+    margin-bottom: 16px;
+}
+
+.hub-muted {
+    color: rgb(125, 122, 126);
+    font-size: 12px;
+    white-space: normal;
+}
+
+.hub-greeting-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.hub-avatar {
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 23px;
+    background-color: rgb(255, 135, 145);
+    border-width: 0;
+    color: white;
+    font-size: 24px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.hub-avatar-large {
+    width: 66px;
+    height: 66px;
+    margin-right: 14px;
+    border-radius: 36px;
+    font-size: 35px;
+}
+
+.hub-feature, .hub-quest-banner {
+    background-color: rgb(252, 228, 232);
+    border-radius: 13px;
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(238, 0, 47);
+    padding: 17px;
+    margin-top: 8px;
+    margin-bottom: 17px;
+}
+
+.hub-feature-eyebrow {
+    color: rgb(239, 0, 48);
+    font-size: 11px;
+    -unity-font-style: bold;
+    margin-bottom: 7px;
+}
+
+.hub-feature-title {
+    color: rgb(36, 26, 30);
+    font-size: 20px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 6px;
+}
+
+.hub-feature-copy {
+    color: rgb(105, 81, 89);
+    font-size: 12px;
+    white-space: normal;
+}
+
+.hub-feature-button {
+    height: 37px;
+    margin-top: 14px;
+    padding-left: 12px;
+    padding-right: 12px;
+    align-self: flex-start;
+    background-color: rgb(242, 0, 48);
+    border-width: 0;
+    border-radius: 7px;
+    color: white;
+    -unity-font-style: bold;
+    font-size: 12px;
+}
+
+.hub-stats-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.hub-stat {
+    width: 48%;
+    min-height: 70px;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(238, 236, 239);
+}
+
+.hub-stat-value {
+    color: rgb(238, 0, 47);
+    font-size: 21px;
+    -unity-font-style: bold;
+}
+
+.hub-stat-label {
+    color: rgb(119, 115, 120);
+    font-size: 11px;
+}
+
+.hub-section-title {
+    color: rgb(29, 29, 31);
+    font-size: 17px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.hub-path-item, .hub-lesson-card {
+    min-height: 62px;
+    margin-bottom: 11px;
+    padding-left: 16px;
+    padding-right: 13px;
+    background-color: white;
+    color: rgb(37, 37, 40);
+    border-width: 1px;
+    border-color: rgb(234, 231, 236);
+    border-left-width: 4px;
+    border-left-color: rgb(243, 0, 47);
+    border-radius: 10px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+}
+
+.hub-path-item:hover, .hub-lesson-card:hover {
+    background-color: rgb(255, 246, 248);
+}
+
+.hub-lesson-card {
+    min-height: 75px;
+}
+
+.hub-list {
+    margin-top: 7px;
+}
+
+.hub-lesson-detail {
+    margin-top: 8px;
+}
+
+.hub-reading-card {
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(235, 232, 235);
+    border-radius: 10px;
+    padding: 17px;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.hub-reading-text {
+    color: rgb(57, 55, 59);
+    font-size: 15px;
+    white-space: normal;
+}
+
+.hub-primary {
+    width: 100%;
+    height: 49px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgb(242, 0, 48);
+    color: white;
+    -unity-font-style: bold;
+    font-size: 14px;
+}
+
+.hub-primary:hover {
+    background-color: rgb(211, 0, 42);
+}
+
+.hub-outline {
+    width: 100%;
+    height: 47px;
+    margin-top: 9px;
+    border-width: 1px;
+    border-color: rgb(242, 0, 48);
+    border-radius: 8px;
+    color: rgb(220, 0, 43);
+    background-color: transparent;
+    font-size: 14px;
+}
+
+.hub-text-button {
+    align-self: flex-start;
+    min-height: 31px;
+    margin-bottom: 10px;
+    border-width: 0;
+    background-color: transparent;
+    color: rgb(225, 0, 44);
+    font-size: 13px;
+}
+
+.hub-quest-banner {
+    background-color: rgb(40, 39, 42);
+    border-bottom-color: rgb(240, 135, 226);
+}
+
+.hub-quest-banner .hub-feature-eyebrow {
+    color: rgb(244, 160, 233);
+}
+
+.hub-quest-banner .hub-feature-title {
+    color: white;
+}
+
+.hub-quest-banner .hub-feature-copy {
+    color: rgb(209, 206, 210);
+}
+
+.hub-filters {
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.hub-filter {
+    height: 32px;
+    margin-right: 7px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: rgb(230, 228, 231);
+    border-width: 0;
+    border-radius: 17px;
+    color: rgb(80, 76, 82);
+    font-size: 12px;
+}
+
+.hub-filter-active {
+    background-color: rgb(245, 198, 239);
+    color: rgb(95, 30, 91);
+    -unity-font-style: bold;
+}
+
+.hub-quest-card {
+    margin-bottom: 11px;
+    padding: 14px;
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(236, 233, 237);
+    border-left-width: 4px;
+    border-left-color: rgb(242, 0, 48);
+    border-radius: 10px;
+}
+
+.hub-quest-done {
+    border-left-color: rgb(76, 206, 73);
+}
+
+.hub-quest-title {
+    color: rgb(38, 36, 40);
+    font-size: 14px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 5px;
+}
+
+.hub-quest-progress {
+    color: rgb(126, 120, 127);
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.hub-progress-track {
+    width: 100%;
+    height: 7px;
+    border-radius: 4px;
+    background-color: rgb(225, 223, 227);
+    margin-bottom: 8px;
+}
+
+.hub-progress-fill {
+    height: 7px;
+    border-radius: 4px;
+    background-color: rgb(239, 0, 48);
+}
+
+.hub-quest-done .hub-progress-fill {
+    background-color: rgb(77, 203, 71);
+}
+
+.hub-quest-action {
+    align-self: flex-end;
+    border-width: 0;
+    background-color: transparent;
+    color: rgb(228, 0, 44);
+    -unity-font-style: bold;
+    font-size: 12px;
+}
+
+.hub-podium {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 178px;
+    margin-top: 8px;
+    margin-bottom: 17px;
+}
+
+.hub-podium-item {
+    width: 31%;
+    min-height: 104px;
+    margin-left: 3px;
+    margin-right: 3px;
+    padding: 8px;
+    border-radius: 10px;
+    background-color: rgb(245, 207, 238);
+    align-items: center;
+    justify-content: center;
+}
+
+.hub-podium-first {
+    min-height: 150px;
+    background-color: rgb(246, 4, 50);
+}
+
+.hub-podium-second {
+    min-height: 126px;
+    background-color: rgb(164, 239, 68);
+}
+
+.hub-podium-rank {
+    color: rgb(32, 30, 34);
+    font-size: 25px;
+    -unity-font-style: bold;
+}
+
+.hub-podium-name, .hub-podium-score {
+    color: rgb(40, 37, 42);
+    font-size: 11px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.hub-podium-first .hub-podium-rank,
+.hub-podium-first .hub-podium-name,
+.hub-podium-first .hub-podium-score {
+    color: white;
+}
+
+.hub-section-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hub-ranking-row {
+    min-height: 49px;
+    margin-bottom: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 8px;
+    background-color: white;
+    flex-direction: row;
+    align-items: center;
+}
+
+.hub-ranking-self {
+    background-color: rgb(255, 217, 221);
+    border-width: 1px;
+    border-color: rgb(245, 117, 128);
+}
+
+.hub-ranking-rank {
+    width: 27px;
+    color: rgb(109, 106, 110);
+    -unity-font-style: bold;
+    font-size: 13px;
+}
+
+.hub-ranking-name {
+    flex-grow: 1;
+    color: rgb(43, 41, 44);
+    font-size: 13px;
+}
+
+.hub-ranking-score {
+    color: rgb(94, 90, 96);
+    font-size: 12px;
+}
+
+.hub-profile-head {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.hub-profile-card {
+    margin-bottom: 12px;
+    padding: 16px;
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(235, 232, 237);
+    border-radius: 10px;
+}
+
+.hub-profile-value {
+    color: rgb(39, 36, 40);
+    font-size: 15px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.hub-market-balance {
+    margin-bottom: 18px;
+    padding: 16px;
+    border-radius: 10px;
+    background-color: rgb(255, 228, 232);
+}
+
+.hub-market-stock {
+    min-height: 60px;
+    margin-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-width: 1px;
+    border-color: rgb(235, 232, 237);
+    border-radius: 9px;
+    background-color: white;
+    color: rgb(39, 37, 41);
+    font-size: 12px;
+    white-space: normal;
+    -unity-text-align: middle-left;
+}
+
+.hub-market-stock:hover {
+    background-color: rgb(255, 242, 245);
+}
+
+.hub-market-quantity {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: rgb(38, 36, 40);
+}
+
+.hub-market-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.hub-market-action {
+    width: 48%;
+    height: 40px;
+    margin-bottom: 8px;
+    border-width: 1px;
+    border-color: rgb(241, 0, 48);
+    border-radius: 7px;
+    background-color: white;
+    color: rgb(223, 0, 43);
+    font-size: 12px;
+}
+
+.hub-market-buy {
+    background-color: rgb(242, 0, 48);
+    color: white;
+}
+
+.hub-market-news {
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(236, 233, 237);
+}
+
+.hub-logout {
+    margin-top: 14px;
+}
+
+.hub-nav {
+    flex-shrink: 0;
+    height: 66px;
+    flex-direction: row;
+    background-color: white;
+    border-top-width: 1px;
+    border-top-color: rgb(221, 219, 223);
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.hub-nav-button {
+    flex-grow: 1;
+    height: 100%;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-width: 0;
+    border-top-width: 3px;
+    border-top-color: transparent;
+    background-color: transparent;
+    color: rgb(132, 129, 134);
+    font-size: 11px;
+}
+
+.hub-nav-active {
+    border-top-color: rgb(242, 0, 48);
+    color: rgb(242, 0, 48);
+    -unity-font-style: bold;
+}
+
+.hub-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.72);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.hub-result-card {
+    width: 100%;
+    max-width: 360px;
+    padding: 25px;
+    border-radius: 15px;
+    background-color: white;
+    align-items: center;
+}
+
+.hub-result-score {
+    color: rgb(242, 0, 48);
+    font-size: 30px;
+    -unity-font-style: bold;
+    margin-top: 15px;
+    margin-bottom: 12px;
+}

@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <ui:VisualElement name="OnboardingScreen" class="entry-screen">
+        <ui:ScrollView class="entry-scroll">
+            <ui:VisualElement class="entry-shell onboarding-shell">
+                <ui:VisualElement class="onboarding-header">
+                    <ui:Button name="back-btn" text="‹" class="entry-back" />
+                    <ui:Label name="step-text" text="1 / 5" class="onboarding-step-text" />
+                    <ui:Button name="skip-btn" text="Пропустить" class="entry-link onboarding-skip" />
+                </ui:VisualElement>
+                <ui:VisualElement class="onboarding-progress-track">
+                    <ui:VisualElement name="progress-fill" class="onboarding-progress-fill" />
+                </ui:VisualElement>
+                <ui:VisualElement class="onboarding-body">
+                    <ui:VisualElement class="onboarding-art">
+                        <ui:Label name="art-symbol" text="01" class="onboarding-art-symbol" />
+                    </ui:VisualElement>
+                    <ui:Label name="slide-title" text="Двигайся по дорожке знаний" class="entry-title" />
+                    <ui:Label name="slide-description" text="" class="entry-copy" />
+                    <ui:VisualElement name="interests-group" class="onboarding-interests" style="display: none;">
+                        <ui:Label text="Что тебе интересно?" class="entry-field-label" />
+                        <ui:TextField name="interests-field" placeholder-text="Например: игры, путешествия, технологии" multiline="true" class="entry-input onboarding-interests-input" />
+                        <ui:Label text="По твоему ответу мы попробуем подобрать вопросы." class="entry-copy" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="onboarding-footer">
+                    <ui:Label name="status-text" text="" class="entry-status" />
+                    <ui:Button name="confirm-btn" text="Продолжить →" class="entry-primary" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

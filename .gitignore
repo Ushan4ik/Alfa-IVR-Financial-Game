@@ -1,0 +1,27 @@
+# Unity generated directories
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Ll]ogs/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Uu]serSettings/
+**/MemoryCaptures/
+
+# IDE and OS
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+.DS_Store
+
+# Spring / Gradle
+**/.gradle/
+**/build/
+**/out/
+
+# Secrets and local configuration
+**/.env

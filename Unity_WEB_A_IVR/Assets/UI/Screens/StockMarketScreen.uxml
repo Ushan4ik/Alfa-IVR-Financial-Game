@@ -1,0 +1,64 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <ui:VisualElement name="MarketScreen" class="screen" style="flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 24px;">
+
+        <!-- Верхняя панель -->
+        <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <ui:Label text="Биржа акций" class="title" style="margin-bottom: 0;" />
+            <ui:VisualElement style="flex-direction: row; align-items: center;">
+                <ui:Label name="day-text" text="День 0" class="profile-label" style="margin-right: 24px;" />
+                <ui:Label name="cash-text" text="Наличные: 0 ₸" class="profile-label" style="margin-right: 24px;" />
+                <ui:Label name="total-text" text="Капитал: 0 ₸" class="profile-value" />
+            </ui:VisualElement>
+            <ui:Button name="leaderboard-btn" text="Лидерборд" class="btn-secondary" style="width: 130px; margin-top: 0; margin-right: 8px;" />
+            <ui:Button name="exit-btn" text="Выйти" class="btn-secondary" style="width: 120px; margin-top: 0;" />
+        </ui:VisualElement>
+
+        <!-- Основная область -->
+        <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
+
+            <!-- Список акций -->
+            <ui:VisualElement class="card" style="width: 360px; margin-right: 16px;">
+                <ui:Label text="Акции" class="subtitle" style="margin-bottom: 12px; -unity-text-align: upper-left;" />
+                <ui:ScrollView name="stock-list" style="flex-grow: 1;" />
+            </ui:VisualElement>
+
+            <!-- Правая колонка: детали + новости -->
+            <ui:VisualElement style="flex-grow: 1;">
+
+                <ui:VisualElement name="detail-panel" class="card" style="margin-bottom: 16px;">
+                    <ui:Label name="detail-empty" text="Выбери акцию слева" class="subtitle" />
+
+                    <ui:VisualElement name="detail-content" style="display: none;">
+                        <ui:Label name="detail-title" text="" class="title" style="font-size: 20px; margin-bottom: 4px;" />
+                        <ui:Label name="detail-price" text="" class="profile-value" style="font-size: 18px; margin-bottom: 16px;" />
+
+                        <ui:VisualElement name="detail-holding-row" class="profile-row" style="display: none;">
+                            <ui:Label text="Твоя позиция" class="profile-label" />
+                            <ui:Label name="detail-holding" text="" class="profile-value" />
+                        </ui:VisualElement>
+
+                        <ui:IntegerField name="qty-field" label="Количество" value="1" style="margin-top: 12px; margin-bottom: 12px;" />
+
+                        <ui:VisualElement style="flex-direction: row;">
+                            <ui:Button name="buy-btn" text="Купить" class="btn-primary" style="flex-grow: 1; margin-right: 6px;" />
+                            <ui:Button name="sell-btn" text="Продать" class="btn-secondary" style="flex-grow: 1;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-direction: row;">
+                            <ui:Button name="short-btn" text="Шорт" class="btn-secondary" style="flex-grow: 1; margin-right: 6px;" />
+                            <ui:Button name="cover-btn" text="Закрыть шорт" class="btn-secondary" style="flex-grow: 1;" />
+                        </ui:VisualElement>
+
+                        <ui:Label name="trade-status" text="" class="status-text" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="card" style="flex-grow: 1;">
+                    <ui:Label text="Новости" class="subtitle" style="margin-bottom: 12px; -unity-text-align: upper-left;" />
+                    <ui:ScrollView name="news-list" style="flex-grow: 1;" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

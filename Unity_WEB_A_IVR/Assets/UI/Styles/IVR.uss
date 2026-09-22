@@ -1,0 +1,531 @@
+/* ─── Общие ─────────────────────────── */
+
+.screen {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(18, 18, 30);
+}
+
+.card {
+    width: 420px;
+    background-color: rgb(30, 30, 46);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.title {
+    font-size: 28px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    margin-bottom: 24px;
+    -unity-text-align: upper-center;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: rgb(160, 160, 180);
+    margin-bottom: 20px;
+    -unity-text-align: upper-center;
+}
+
+/* ─── Поля ввода ─────────────────────── */
+
+.input-field {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgb(60, 60, 90);
+    background-color: rgb(40, 40, 60);
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    height: 48px;
+}
+
+.input-field:focus {
+    border-color: rgb(120, 100, 255);
+}
+
+/* ─── Кнопки ─────────────────────────── */
+
+.btn-primary {
+    height: 48px;
+    border-radius: 8px;
+    background-color: rgb(120, 100, 255);
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    border-width: 0;
+    margin-top: 8px;
+}
+
+.btn-primary:hover {
+    background-color: rgb(140, 120, 255);
+}
+
+.btn-secondary {
+    height: 48px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: rgb(120, 100, 255);
+    font-size: 16px;
+    border-width: 1px;
+    border-color: rgb(120, 100, 255);
+    margin-top: 8px;
+}
+
+/* ─── Статус / ошибки ────────────────── */
+
+.status-text {
+    font-size: 13px;
+    color: rgb(160, 160, 180);
+    -unity-text-align: upper-center;
+    margin-top: 12px;
+    white-space: normal;
+}
+
+.status-error {
+    color: rgb(255, 100, 100);
+}
+
+/* ─── Профиль ────────────────────────── */
+
+.profile-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    border-bottom-width: 1px;
+    border-color: rgb(50, 50, 70);
+    padding-bottom: 12px;
+}
+
+.profile-label {
+    font-size: 14px;
+    color: rgb(160, 160, 180);
+}
+
+.profile-value {
+    font-size: 14px;
+    color: white;
+    -unity-font-style: bold;
+}
+
+.spacer {
+    height: 16px;
+}
+
+/* Приветствие, регистрация и вход. Узкий холст повторяет мобильные макеты. */
+.entry-screen {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    background-color: rgb(244, 244, 245);
+    align-items: center;
+}
+
+.entry-scroll {
+    width: 100%;
+    height: 100%;
+}
+
+.entry-shell {
+    width: 100%;
+    max-width: 440px;
+    min-height: 720px;
+    align-self: center;
+    background-color: white;
+    padding-left: 26px;
+    padding-right: 26px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.entry-header {
+    height: 48px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.entry-brand {
+    flex-direction: row;
+    align-items: center;
+}
+
+.entry-logo {
+    width: 31px;
+    height: 31px;
+    border-radius: 7px;
+    background-color: rgb(242, 0, 48);
+    color: white;
+    font-size: 21px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-right: 9px;
+}
+
+.entry-brand-name {
+    color: rgb(30, 30, 32);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.entry-back {
+    width: 34px;
+    height: 34px;
+    margin-right: 8px;
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(30, 30, 32);
+    font-size: 28px;
+    -unity-text-align: middle-center;
+}
+
+.welcome-hero {
+    flex-grow: 1;
+    justify-content: center;
+    padding-top: 14px;
+}
+
+.welcome-art {
+    height: 242px;
+    margin-bottom: 18px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-card {
+    width: 136px;
+    height: 188px;
+    margin-right: 40px;
+    border-radius: 16px;
+    background-color: rgb(239, 24, 44);
+    padding: 16px;
+    justify-content: space-between;
+    border-bottom-width: 8px;
+    border-bottom-color: rgb(196, 0, 31);
+}
+
+.welcome-card-logo {
+    color: white;
+    font-size: 44px;
+    -unity-font-style: bold;
+}
+
+.welcome-card-caption {
+    color: white;
+    font-size: 10px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.welcome-coin {
+    position: absolute;
+    right: 28px;
+    top: 76px;
+    width: 94px;
+    height: 94px;
+    border-radius: 50px;
+    border-width: 9px;
+    border-color: rgb(245, 190, 75);
+    background-color: rgb(224, 150, 46);
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-coin-text {
+    color: white;
+    font-size: 44px;
+    -unity-font-style: bold;
+}
+
+.welcome-reward {
+    position: absolute;
+    right: 8px;
+    bottom: 9px;
+    background-color: rgb(217, 255, 205);
+    border-radius: 9px;
+    padding-left: 11px;
+    padding-right: 11px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    align-items: center;
+}
+
+.welcome-reward-number {
+    color: rgb(23, 148, 24);
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.welcome-reward-caption {
+    color: rgb(38, 83, 31);
+    font-size: 9px;
+}
+
+.welcome-spark {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+}
+
+.welcome-spark-left {
+    left: 31px;
+    top: 48px;
+    background-color: rgb(114, 223, 72);
+}
+
+.welcome-spark-right {
+    right: 32px;
+    top: 21px;
+    background-color: rgb(112, 183, 255);
+}
+
+.welcome-title {
+    color: rgb(28, 28, 31);
+    font-size: 38px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 13px;
+}
+
+.entry-copy {
+    color: rgb(110, 110, 115);
+    font-size: 15px;
+    white-space: normal;
+}
+
+.welcome-footer {
+    padding-top: 18px;
+}
+
+.welcome-benefits {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.welcome-benefit {
+    width: 31%;
+    height: 73px;
+    border-radius: 9px;
+    background-color: rgb(21, 21, 22);
+    justify-content: center;
+    padding-left: 13px;
+}
+
+.welcome-benefit-number {
+    color: rgb(120, 245, 73);
+    font-size: 21px;
+    -unity-font-style: bold;
+}
+
+.welcome-benefit-caption {
+    color: white;
+    font-size: 11px;
+}
+
+.entry-primary {
+    width: 100%;
+    height: 52px;
+    border-width: 0;
+    border-radius: 7px;
+    background-color: rgb(242, 0, 48);
+    color: white;
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+.entry-primary:hover {
+    background-color: rgb(210, 0, 40);
+}
+
+.entry-link {
+    width: 100%;
+    height: 43px;
+    border-width: 0;
+    background-color: transparent;
+    color: rgb(208, 0, 42);
+    font-size: 14px;
+}
+
+.entry-form-top {
+    margin-top: 34px;
+    margin-bottom: 25px;
+}
+
+.entry-title {
+    color: rgb(28, 28, 31);
+    font-size: 31px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.entry-step-row {
+    height: 4px;
+    flex-direction: row;
+    margin-bottom: 29px;
+}
+
+.entry-step, .entry-step-active {
+    flex-grow: 1;
+    height: 4px;
+    margin-right: 5px;
+    border-radius: 2px;
+    background-color: rgb(220, 220, 223);
+}
+
+.entry-step-active {
+    background-color: rgb(242, 0, 48);
+}
+
+.entry-form {
+    flex-grow: 1;
+}
+
+.entry-field-label {
+    color: rgb(35, 35, 38);
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 7px;
+}
+
+.entry-input {
+    height: 49px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgb(218, 218, 221);
+    background-color: rgb(249, 249, 250);
+    color: rgb(30, 30, 32);
+    font-size: 15px;
+}
+
+.entry-input:focus {
+    border-color: rgb(242, 0, 48);
+}
+
+.entry-status {
+    min-height: 23px;
+    color: rgb(75, 75, 80);
+    font-size: 13px;
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+.entry-status.status-error {
+    color: rgb(208, 0, 42);
+}
+
+.entry-mini-art {
+    height: 118px;
+    margin-top: 28px;
+    border-radius: 14px;
+    background-color: rgb(255, 236, 239);
+    flex-direction: row;
+    align-items: center;
+    padding-left: 23px;
+}
+
+.entry-mini-coin {
+    width: 67px;
+    height: 67px;
+    border-radius: 36px;
+    background-color: rgb(238, 177, 68);
+    color: white;
+    font-size: 36px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    margin-right: 17px;
+}
+
+.entry-mini-caption {
+    flex-grow: 1;
+    color: rgb(36, 36, 40);
+    font-size: 18px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+/* Шаги знакомства после регистрации */
+.onboarding-shell {
+    justify-content: space-between;
+}
+
+.onboarding-header {
+    height: 40px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.onboarding-step-text {
+    color: rgb(115, 110, 116);
+    font-size: 12px;
+}
+
+.onboarding-skip {
+    width: 94px;
+    height: 34px;
+    font-size: 12px;
+}
+
+.onboarding-progress-track {
+    width: 100%;
+    height: 4px;
+    margin-top: 8px;
+    border-radius: 3px;
+    background-color: rgb(223, 220, 224);
+}
+
+.onboarding-progress-fill {
+    width: 20%;
+    height: 4px;
+    border-radius: 3px;
+    background-color: rgb(242, 0, 48);
+}
+
+.onboarding-body {
+    flex-grow: 1;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.onboarding-art {
+    height: 210px;
+    margin-bottom: 36px;
+    border-radius: 17px;
+    background-color: rgb(255, 238, 241);
+    align-items: center;
+    justify-content: center;
+}
+
+.onboarding-art-symbol {
+    width: 132px;
+    height: 132px;
+    border-radius: 68px;
+    border-width: 7px;
+    border-color: rgb(255, 193, 204);
+    background-color: rgb(242, 0, 48);
+    color: white;
+    font-size: 54px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.onboarding-interests {
+    margin-top: 24px;
+}
+
+.onboarding-interests-input {
+    min-height: 108px;
+    white-space: normal;
+}
+
+.onboarding-footer {
+    padding-top: 20px;
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>IVR Admin — Вопросы</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #0f0f1a; color: #fff; padding: 32px; }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { color: #888; margin-bottom: 32px; font-size: 14px; }
+
+        .card { background: #1e1e2e; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        h2 { font-size: 16px; margin-bottom: 16px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+
+        label { display: block; font-size: 13px; color: #888; margin-bottom: 4px; margin-top: 12px; }
+        input, select, textarea {
+            width: 100%; padding: 10px 12px; border-radius: 8px;
+            background: #2a2a3e; border: 1px solid #3a3a5e; color: #fff;
+            font-size: 14px; outline: none;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #7864ff; }
+        textarea { resize: vertical; min-height: 60px; }
+
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        button {
+            margin-top: 16px; padding: 12px 24px; border-radius: 8px; border: none;
+            background: #7864ff; color: #fff; font-size: 15px; font-weight: bold;
+            cursor: pointer; width: 100%;
+        }
+        button:hover { background: #9080ff; }
+        button.secondary { background: transparent; border: 1px solid #7864ff; color: #7864ff; }
+
+        .status { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: none; }
+        .status.ok  { background: #1a3a2a; color: #4caf80; display: block; }
+        .status.err { background: #3a1a1a; color: #f06060; display: block; }
+
+        #login-section { max-width: 400px; }
+        #main-section { display: none; max-width: 700px; }
+
+        .question-list { list-style: none; }
+        .question-list li {
+            padding: 12px; background: #2a2a3e; border-radius: 8px;
+            margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between;
+        }
+        .question-list li span { color: #888; font-size: 12px; }
+        .del-btn { background: none; border: none; color: #f06060; cursor: pointer; width: auto; margin: 0; padding: 0; font-size: 18px; }
+
+        .bulk-area { font-family: monospace; min-height: 200px; font-size: 13px; }
+
+        .player-row {
+            background: #2a2a3e; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+        }
+        .player-row-head {
+            display: flex; align-items: center; padding: 10px 14px; gap: 10px; cursor: pointer;
+        }
+        .player-row-head:hover { background: #32324e; }
+        .player-col-rank  { width: 28px; font-size: 16px; flex-shrink: 0; }
+        .player-col-name  { flex: 1; font-size: 14px; font-weight: bold; }
+        .player-col-email { flex: 1; font-size: 12px; color: #888; }
+        .player-col-stat  { width: 90px; text-align: right; font-size: 13px; }
+        .player-col-edit  { width: 60px; text-align: right; flex-shrink: 0; }
+        .edit-inline-btn {
+            background: transparent; border: 1px solid #7864ff; color: #7864ff;
+            border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+            margin: 0; width: auto; font-weight: normal;
+        }
+        .edit-inline-btn:hover { background: rgba(120,100,255,0.15); }
+        .player-edit-panel {
+            display: none; padding: 14px 14px 14px 42px;
+            border-top: 1px solid #3a3a5e; background: #22223a;
+        }
+        .player-edit-panel.open { display: block; }
+        .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+        .edit-grid label { margin-top: 0; }
+        .edit-grid input { margin-top: 0; }
+        .save-btn { margin-top: 12px; width: auto; padding: 8px 20px; font-size: 13px; }
+        .stat-badge { color: #b0b0d0; }
+        .stat-highlight { color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<!-- Логин -->
+<div id="login-section">
+    <h1>IVR Admin</h1>
+    <p class="subtitle">Управление вопросами</p>
+    <div class="card">
+        <h2>Войти</h2>
+        <label>Email</label>
+        <input id="email" type="email" autocomplete="username" placeholder="admin@example.com" />
+        <label>Пароль</label>
+        <input id="password" type="password" autocomplete="current-password" />
+        <button onclick="login()">Войти</button>
+        <div id="login-status" class="status"></div>
+    </div>
+</div>
+
+<!-- Основной интерфейс -->
+<div id="main-section">
+    <h1>IVR Admin</h1>
+    <p class="subtitle" id="user-info"></p>
+
+    <!-- Игроки -->
+    <div class="card">
+        <h2>Игроки</h2>
+        <input id="player-search" placeholder="Поиск по нику или email..." oninput="filterPlayers()" style="margin-bottom:14px;" />
+        <div id="player-list">Загрузка...</div>
+        <div id="players-status" class="status"></div>
+    </div>
+
+    <!-- Биржа -->
+    <div class="card">
+        <h2>Рынок акций</h2>
+        <p id="market-info" style="font-size:14px; color:#ccc; margin-bottom:12px;">Загрузка...</p>
+
+        <label>Интервал рыночного дня (минут)</label>
+        <input id="market-interval" type="number" min="1" placeholder="1440" />
+        <button onclick="saveInterval()">Сохранить интервал</button>
+        <div id="interval-status" class="status"></div>
+
+        <label>Пропустить дни сразу (для демонстрации)</label>
+        <input id="skip-days" type="number" min="1" value="1" />
+        <button class="secondary" onclick="skipDays()">Пропустить</button>
+        <div id="skip-status" class="status"></div>
+
+        <label style="margin-top:20px;">Текущие акции</label>
+        <ul id="stock-list" class="question-list" style="margin-top:8px;"></ul>
+    </div>
+
+    <!-- Добавить один вопрос -->
+    <div class="card">
+        <h2>Добавить вопрос</h2>
+
+        <label>Текст вопроса</label>
+        <textarea id="q-text" placeholder="Что такое инфляция?"></textarea>
+
+        <label>Варианты ответов</label>
+        <div class="answers-grid">
+            <input id="a0" placeholder="Ответ 1 (правильный если индекс 0)" />
+            <input id="a1" placeholder="Ответ 2" />
+            <input id="a2" placeholder="Ответ 3" />
+            <input id="a3" placeholder="Ответ 4" />
+        </div>
+
+        <label>Правильный ответ (0–3)</label>
+        <select id="q-correct">
+            <option value="0">0 — первый</option>
+            <option value="1">1 — второй</option>
+            <option value="2">2 — третий</option>
+            <option value="3">3 — четвёртый</option>
+        </select>
+
+        <label>Категория</label>
+        <input id="q-category" placeholder="учёба / финансы / инвестиции" />
+
+        <label>ID урока (необязательно)</label>
+        <input id="q-lesson" placeholder="lesson_inflation" />
+
+        <label>Уровень</label>
+        <select id="q-level">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+
+        <button onclick="addQuestion()">Добавить вопрос</button>
+        <div id="add-status" class="status"></div>
+    </div>
+
+    <!-- Массовая загрузка -->
+    <div class="card">
+        <h2>Загрузить из JSON</h2>
+        <label>Вставь JSON массив с вопросами</label>
+        <textarea id="bulk-json" class="bulk-area" placeholder='[
+  {
+    "text": "Что такое инфляция?",
+    "answers": ["Рост цен", "Падение цен", "Курс валют", "Ставка банка"],
+    "correctIndex": 0,
+    "category": "учёба",
+    "lessonId": "lesson_inflation",
+    "level": 1
+  }
+]'></textarea>
+        <button onclick="bulkAdd()">Загрузить все</button>
+        <div id="bulk-status" class="status"></div>
+    </div>
+
+    <!-- Список вопросов -->
+    <div class="card">
+        <h2>Вопросы в базе</h2>
+        <label>Категория</label>
+        <input id="filter-category" placeholder="учёба" oninput="loadQuestions()" />
+        <ul id="question-list" class="question-list" style="margin-top: 16px;"></ul>
+    </div>
+</div>
+
+<script>
+    const API = 'http://localhost:8080';
+    let token = localStorage.getItem('ivr_token') || '';
+
+    if (token) showMain();
+
+    async function login() {
+        const res = await fetch(`${API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: document.getElementById('email').value, password: document.getElementById('password').value })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            token = data.token;
+            localStorage.setItem('ivr_token', token);
+            showMain();
+        } else {
+            status('login-status', 'Неверный логин или пароль', false);
+        }
+    }
+
+    let allPlayers = [];
+
+    function showMain() {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('main-section').style.display = 'block';
+        document.getElementById('user-info').textContent = 'Вы вошли';
+        loadPlayers();
+        loadQuestions();
+        loadMarket();
+    }
+
+    async function loadPlayers() {
+        const res = await fetch(`${API}/admin/players`, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) { document.getElementById('player-list').textContent = 'Ошибка загрузки'; return; }
+        allPlayers = await res.json();
+        renderPlayers(allPlayers);
+    }
+
+    function filterPlayers() {
+        const q = document.getElementById('player-search').value.toLowerCase();
+        renderPlayers(allPlayers.filter(p =>
+            p.nickname.toLowerCase().includes(q) || p.email.toLowerCase().includes(q)
+        ));
+    }
+
+    function renderPlayers(players) {
+        const medals = ['🥇','🥈','🥉'];
+        document.getElementById('player-list').innerHTML = players.map((p, i) => {
+            const rank = medals[i] || (i + 1);
+            return `
+            <div class="player-row" id="pr-${p.id}">
+                <div class="player-row-head" onclick="toggleEdit('${p.id}')">
+                    <span class="player-col-rank">${rank}</span>
+                    <span class="player-col-name">${escHtml(p.nickname)}</span>
+                    <span class="player-col-email">${escHtml(p.email)}</span>
+                    <span class="player-col-stat stat-badge">Ур. <b>${p.level}</b> · ${p.finLiteracyScore} оч.</span>
+                    <span class="player-col-stat stat-badge">💵 ${Math.round(p.cash).toLocaleString()} ₸</span>
+                    <span class="player-col-stat stat-highlight">📈 ${Math.round(p.totalValue).toLocaleString()} ₸</span>
+                    <span class="player-col-edit"><button class="edit-inline-btn">Ред.</button></span>
+                </div>
+                <div class="player-edit-panel" id="ep-${p.id}">
+                    <div class="edit-grid">
+                        <div>
+                            <label>Никнейм</label>
+                            <input id="en-${p.id}" value="${escHtml(p.nickname)}" />
+                        </div>
+                        <div>
+                            <label>Наличные (₸)</label>
+                            <input id="ec-${p.id}" type="number" value="${p.cash}" />
+                        </div>
+                        <div>
+                            <label>Уровень</label>
+                            <input id="el-${p.id}" type="number" value="${p.level}" min="1" />
+                        </div>
+                        <div>
+                            <label>Очки финграмотности</label>
+                            <input id="es-${p.id}" type="number" value="${p.finLiteracyScore}" min="0" />
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="savePlayer('${p.id}')">Сохранить</button>
+                    <span id="ps-${p.id}" style="margin-left:12px; font-size:13px; color:#4caf80;"></span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleEdit(id) {
+        const panel = document.getElementById('ep-' + id);
+        panel.classList.toggle('open');
+    }
+
+    async function savePlayer(id) {
+        const body = {
+            nickname: document.getElementById('en-' + id).value,
+            cash:     parseFloat(document.getElementById('ec-' + id).value),
+            level:    parseInt(document.getElementById('el-' + id).value),
+            finLiteracyScore: parseInt(document.getElementById('es-' + id).value)
+        };
+        const res = await fetch(`${API}/admin/players/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+        const msgEl = document.getElementById('ps-' + id);
+        if (res.ok) {
+            const updated = await res.json();
+            msgEl.style.color = '#4caf80';
+            msgEl.textContent = 'Сохранено ✓';
+            // update local cache and re-render
+            const idx = allPlayers.findIndex(p => p.id === id);
+            if (idx !== -1) allPlayers[idx] = updated;
+            setTimeout(() => { renderPlayers(allPlayers); }, 800);
+        } else {
+            msgEl.style.color = '#f06060';
+            msgEl.textContent = 'Ошибка ' + res.status;
+        }
+    }
+
+    function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function loadMarket() {
+        const stateRes = await fetch(`${API}/admin/market/state`, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (stateRes.ok) {
+            const state = await stateRes.json();
+            document.getElementById('market-interval').value = state.tickIntervalMinutes;
+            const last = new Date(state.lastTickAt);
+            document.getElementById('market-info').textContent =
+                `День ${state.currentDay} · интервал ${state.tickIntervalMinutes} мин · последний тик: ${last.toLocaleString()}`;
+        }
+
+        const stocksRes = await fetch(`${API}/market/stocks`, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!stocksRes.ok) return;
+        const stocks = await stocksRes.json();
+        document.getElementById('stock-list').innerHTML = stocks.map(s => {
+            const sign = s.changePercent >= 0 ? '+' : '';
+            const color = s.changePercent >= 0 ? '#4caf80' : '#f06060';
+            return `
+                <li>
+                    <div>
+                        <div>${s.ticker} — ${s.name}</div>
+                        <span>${s.sectorName} · ${s.price.toFixed(2)} ₸</span>
+                    </div>
+                    <span style="color:${color}; font-weight:bold;">${sign}${s.changePercent.toFixed(2)}%</span>
+                </li>
+            `;
+        }).join('');
+    }
+
+    async function saveInterval() {
+        const minutes = parseInt(document.getElementById('market-interval').value);
+        const res = await fetch(`${API}/admin/market/interval`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ minutes })
+        });
+        if (res.ok) {
+            status('interval-status', 'Интервал сохранён', true);
+            loadMarket();
+        } else {
+            status('interval-status', 'Ошибка: ' + res.status, false);
+        }
+    }
+
+    async function skipDays() {
+        const days = parseInt(document.getElementById('skip-days').value);
+        const res = await fetch(`${API}/admin/market/skip`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ days })
+        });
+        if (res.ok) {
+            status('skip-status', `Пропущено ${days} дн.`, true);
+            loadMarket();
+        } else {
+            status('skip-status', 'Ошибка: ' + res.status, false);
+        }
+    }
+
+    async function addQuestion() {
+        const answers = ['a0','a1','a2','a3'].map(id => document.getElementById(id).value).filter(a => a.trim());
+        const body = {
+            text: document.getElementById('q-text').value,
+            answers,
+            correctIndex: parseInt(document.getElementById('q-correct').value),
+            category: document.getElementById('q-category').value,
+            lessonId: document.getElementById('q-lesson').value,
+            level: parseInt(document.getElementById('q-level').value)
+        };
+        const res = await post('/questions', body);
+        if (res.ok) {
+            status('add-status', 'Вопрос добавлен!', true);
+            loadQuestions();
+        } else {
+            status('add-status', 'Ошибка: ' + res.status, false);
+        }
+    }
+
+    async function bulkAdd() {
+        try {
+            const data = JSON.parse(document.getElementById('bulk-json').value);
+            const res = await post('/questions/bulk', data);
+            if (res.ok) {
+                const result = await res.json();
+                status('bulk-status', `Добавлено: ${result.added} вопросов`, true);
+                loadQuestions();
+            } else {
+                status('bulk-status', 'Ошибка: ' + res.status, false);
+            }
+        } catch(e) {
+            status('bulk-status', 'Неверный JSON: ' + e.message, false);
+        }
+    }
+
+    async function loadQuestions() {
+        const cat = document.getElementById('filter-category').value;
+        const url = cat ? `/questions/category/${cat}` : '/questions';
+        const res = await fetch(`${API}${url}`, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) return;
+        const questions = await res.json();
+        const list = document.getElementById('question-list');
+        list.innerHTML = questions.map(q => `
+            <li>
+                <div>
+                    <div>${q.text}</div>
+                    <span>${q.category} · уровень ${q.level} · урок: ${q.lessonId || '—'}</span>
+                </div>
+            </li>
+        `).join('');
+    }
+
+    function post(url, body) {
+        return fetch(`${API}${url}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+    }
+
+    function status(id, msg, ok) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'status ' + (ok ? 'ok' : 'err');
+    }
+</script>
+</body>
+</html>

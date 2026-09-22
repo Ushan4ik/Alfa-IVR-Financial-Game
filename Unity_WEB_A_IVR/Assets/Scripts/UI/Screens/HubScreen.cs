@@ -1,0 +1,423 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using IVR;
+using IVR.Game;
+using IVR.Models;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace IVR.UI
+{
+    public enum HubTab { Home, Learn, Quests, Rating, Profile, Market }
+
+    // Общая оболочка главного меню. Новые вкладки добавляются здесь и в HubScreen.uxml.
+    public class HubScreen : BaseScreen
+    {
+        private readonly Dictionary<HubTab, VisualElement> _pages = new();
+        private readonly Dictionary<HubTab, Button> _navButtons = new();
+        private PlayerProfile _profile;
+        private LessonDefinition _selectedLesson;
+        private PersonalLessonDto _selectedPersonalLesson;
+        private int _learningRequestVersion;
+        private string _pendingPersonalLessonId;
+        private HubTab _activeTab;
+        private int _questFilter; // 0 — все, 1 — в процессе, 2 — готово
+        private MarketPanel _market;
+
+        public HubScreen(VisualTreeAsset asset, VisualElement container)
+            : base(asset, container) { }
+
+        protected override void RegisterCallbacks()
+        {
+            BindTab(HubTab.Home, "home");
+            BindTab(HubTab.Learn, "learn");
+            BindTab(HubTab.Quests, "quests");
+            BindTab(HubTab.Rating, "rating");
+            BindTab(HubTab.Profile, "profile");
+            _pages[HubTab.Market] = Root.Q<VisualElement>("tab-market");
+            _market = new MarketPanel(Root, () => Navigate(HubTab.Home));
+
+            Root.Q<Button>("home-start-quiz").clicked += () => GameManager.Instance.StartQuiz();
+            Root.Q<Button>("home-avatar").clicked += () => Navigate(HubTab.Profile);
+            Root.Q<Button>("profile-quiz").clicked += () => GameManager.Instance.StartQuiz();
+            Root.Q<Button>("home-market").clicked += () => Navigate(HubTab.Market);
+            Root.Q<Button>("profile-market").clicked += () => Navigate(HubTab.Market);
+            Root.Q<Button>("profile-interests-button").clicked += () => ScreenManager.Instance.ShowInterests();
+            Root.Q<Button>("profile-logout").clicked += Logout;
+
+            foreach (var lesson in LessonCatalog.All)
+            {
+                var captured = lesson;
+                Root.Q<Button>("home-" + lesson.Key).clicked += () => OpenLesson(captured);
+                Root.Q<Button>("learn-" + lesson.Key).clicked += () => OpenLesson(captured);
+            }
+
+            Root.Q<Button>("lesson-back").clicked += CloseLesson;
+            Root.Q<Button>("learning-refresh").clicked += () => _ = RefreshPersonalLessons();
+            Root.Q<Button>("learning-diagnostic").clicked += () => GameManager.Instance.StartQuiz(QuizConfig.Diagnostic());
+            Root.Q<Button>("lesson-quiz").clicked += () =>
+            {
+                if (_selectedPersonalLesson != null)
+                    GameManager.Instance.StartQuiz(QuizConfig.ForPersonalLesson(_selectedPersonalLesson.id, _selectedPersonalLesson.topicId));
+                else if (_selectedLesson != null)
+                    GameManager.Instance.StartQuiz(QuizConfig.ForLesson(_selectedLesson.Id));
+            };
+
+            Root.Q<Button>("quest-all").clicked += () => SetQuestFilter(0);
+            Root.Q<Button>("quest-active").clicked += () => SetQuestFilter(1);
+            Root.Q<Button>("quest-done").clicked += () => SetQuestFilter(2);
+            Root.Q<Button>("rating-refresh").clicked += () => _ = RefreshRating();
+            Root.Q<Button>("hub-result-close").clicked += CloseResult;
+        }
+
+        private void BindTab(HubTab tab, string name)
+        {
+            _pages[tab] = Root.Q<VisualElement>("tab-" + name);
+            var button = Root.Q<Button>("nav-" + name);
+            _navButtons[tab] = button;
+            button.clicked += () => Navigate(tab);
+        }
+
+        public new void Show()
+        {
+            base.Show();
+            _learningRequestVersion++;
+            Root.Q<Label>("top-score").text = "Загрузка...";
+            Root.Q<Label>("home-greeting").text = "Привет!";
+            Root.Q<Label>("profile-name").text = "Игрок";
+            Root.Q<Label>("profile-email").text = "";
+            Root.Q<Label>("profile-portfolio").text = "Загрузка...";
+            Root.Q<VisualElement>("hub-result-overlay").style.display = DisplayStyle.None;
+            Navigate(HubTab.Home);
+            _ = RefreshProfile();
+
+            var result = GameManager.Instance?.LastResult;
+            if (result != null)
+            {
+                Root.Q<Label>("hub-result-title").text = result.Passed ? "Отличная работа!" : "Попробуй ещё раз";
+                Root.Q<Label>("hub-result-score").text = "+" + result.Score + " очков";
+                Root.Q<Label>("hub-result-message").text = GameManager.Instance.LastSaveError ??
+                    (result.Passed ? "Твой результат сохранён. Продолжай изучать темы!"
+                        : "Повтори материал и попробуй снова.");
+                Root.Q<Button>("hub-result-close").text = string.IsNullOrEmpty(GameManager.Instance.LastLearningLessonId)
+                    ? "Продолжить" : "Открыть разбор →";
+                Root.Q<VisualElement>("hub-result-overlay").style.display = DisplayStyle.Flex;
+            }
+        }
+
+        public void Navigate(HubTab tab)
+        {
+            _activeTab = tab;
+            foreach (var pair in _pages)
+                pair.Value.style.display = pair.Key == tab ? DisplayStyle.Flex : DisplayStyle.None;
+            foreach (var pair in _navButtons)
+                pair.Value.EnableInClassList("hub-nav-active", pair.Key == tab);
+
+            Root.Q<VisualElement>("hub-nav").style.display =
+                tab == HubTab.Market ? DisplayStyle.None : DisplayStyle.Flex;
+
+            Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+            if (tab == HubTab.Learn) { CloseLesson(); _ = RefreshPersonalLessons(); }
+            if (tab == HubTab.Quests) RenderQuests();
+            if (tab == HubTab.Rating) _ = RefreshRating();
+            if (tab == HubTab.Profile) _ = RefreshPortfolio();
+            if (tab == HubTab.Market) _ = _market.Refresh();
+        }
+
+        private async Task RefreshProfile()
+        {
+            var result = await IvrApi.Player.GetProfile();
+            if (ScreenManager.Instance.Current != AppScreen.Hub || !IvrApi.Auth.IsLoggedIn) return;
+            if (!result.Success)
+            {
+                if (result.Error != null && result.Error.StartsWith("401"))
+                {
+                    IvrApi.Auth.Logout();
+                    ScreenManager.Instance.Show(AppScreen.Login);
+                }
+                else
+                    Root.Q<Label>("top-score").text = "Нет связи";
+                return;
+            }
+
+            _profile = result.Data;
+            GameManager.Instance.SetProfile(_profile);
+            RenderProfile();
+            RenderHome();
+            RenderLessons();
+            RenderQuests();
+            if (_activeTab == HubTab.Profile) _ = RefreshPortfolio();
+        }
+
+        private void RenderProfile()
+        {
+            if (_profile == null) return;
+            Root.Q<Label>("top-score").text = _profile.finLiteracyScore + " очков";
+            Root.Q<Label>("profile-name").text = _profile.nickname;
+            Root.Q<Label>("profile-email").text = _profile.email;
+            Root.Q<Label>("profile-level").text = "Уровень " + _profile.level;
+            Root.Q<Label>("profile-score").text = _profile.finLiteracyScore + " очков знаний";
+            Root.Q<Label>("profile-interests").text = "Интересы: " +
+                (_profile.interests == null || _profile.interests.Count == 0
+                    ? "не указаны"
+                    : string.Join(", ", _profile.interests));
+        }
+
+        private void RenderHome()
+        {
+            if (_profile == null) return;
+            Root.Q<Label>("home-greeting").text = "Привет, " + _profile.nickname + "!";
+            Root.Q<Label>("home-level").text = "УРОВЕНЬ " + _profile.level;
+            Root.Q<Label>("home-score").text = _profile.finLiteracyScore.ToString();
+            Root.Q<Label>("home-lessons").text = LessonCatalog.CompletedCount(_profile.id) + "/" + LessonCatalog.All.Count;
+            foreach (var lesson in LessonCatalog.All)
+                Root.Q<Button>("home-" + lesson.Key).text =
+                    (LessonCatalog.IsCompleted(_profile.id, lesson.Id) ? "✓  " : "○  ") + lesson.Title + "    →";
+        }
+
+        private void RenderLessons()
+        {
+            foreach (var lesson in LessonCatalog.All)
+            {
+                var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
+                Root.Q<Button>("learn-" + lesson.Key).text =
+                    lesson.Title + (done ? "   ·   Пройдено ✓" : "   ·   Читать →");
+            }
+        }
+
+        private void OpenLesson(LessonDefinition lesson)
+        {
+            Navigate(HubTab.Learn);
+            _selectedLesson = lesson;
+            Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.Flex;
+            Root.Q<Label>("lesson-title").text = lesson.Title;
+            Root.Q<Label>("lesson-summary").text = lesson.Summary;
+            Root.Q<Label>("lesson-body").text = lesson.Body;
+        }
+
+        private void CloseLesson()
+        {
+            _selectedLesson = null;
+            _selectedPersonalLesson = null;
+            Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.None;
+        }
+
+        private async Task RefreshPersonalLessons()
+        {
+            int version = ++_learningRequestVersion;
+            var status = Root.Q<Label>("learning-status");
+            var list = Root.Q<VisualElement>("personal-lesson-list");
+            list.Clear();
+            status.text = "Загружаем твои уроки...";
+            try
+            {
+                var lessonsTask = IvrApi.Learning.Lessons();
+                var profileTask = IvrApi.Learning.Profile();
+                await Task.WhenAll(lessonsTask, profileTask);
+                if (version != _learningRequestVersion || !IvrApi.Auth.IsLoggedIn) return;
+                var result = lessonsTask.Result;
+                if (!result.Success) { status.text = "Нет связи. Нажми «Обновить», чтобы загрузить разборы."; return; }
+                status.text = result.Data.Count == 0 ? "Пройди квиз — здесь появится твой разбор и шпаргалка." : "";
+                var knowledge = profileTask.Result;
+                if (knowledge.Success)
+                {
+                    Root.Q<Button>("learning-diagnostic").style.display = knowledge.Data.diagnosticCompleted ? DisplayStyle.None : DisplayStyle.Flex;
+                    var lines = new List<string>();
+                    foreach (var topic in knowledge.Data.topics)
+                        if (topic.total > 0) lines.Add(topic.title + ": " + topic.correct + "/" + topic.total + " последних ответов верно");
+                    Root.Q<Label>("learning-knowledge").text = string.Join("\n", lines);
+                }
+                foreach (var lesson in result.Data)
+                {
+                    var captured = lesson;
+                    var button = new Button(() => OpenPersonalLesson(captured)) {
+                        text = lesson.title + (lesson.completed ? " · Закреплено ✓" : " · Читать →")
+                    };
+                    button.enableRichText = false;
+                    button.AddToClassList("hub-lesson-card");
+                    button.style.whiteSpace = WhiteSpace.Normal;
+                    list.Add(button);
+                    if (lesson.id == _pendingPersonalLessonId)
+                    {
+                        _pendingPersonalLessonId = null;
+                        OpenPersonalLesson(lesson);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (version == _learningRequestVersion) status.text = "Не удалось загрузить уроки. Нажми «Обновить».";
+            }
+        }
+
+        private void OpenPersonalLesson(PersonalLessonDto lesson)
+        {
+            _selectedLesson = null;
+            _selectedPersonalLesson = lesson;
+            Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.Flex;
+            Root.Q<Label>("lesson-title").enableRichText = false;
+            Root.Q<Label>("lesson-body").enableRichText = false;
+            Root.Q<Label>("lesson-title").text = lesson.title;
+            Root.Q<Label>("lesson-summary").text = lesson.completed ? "Ты закрепил тему. Можно повторить без повторной награды."
+                : lesson.status == "PENDING" ? "Шпаргалка уже готова. Персональное объяснение дополняется — обнови список чуть позже."
+                : "Твой разбор · примерно 3 минуты";
+            Root.Q<Label>("lesson-body").text = lesson.explanation + "\n\nПример\n" + lesson.example
+                + "\n\nЗапомни\n• " + string.Join("\n• ", lesson.cheatSheet);
+            Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void SetQuestFilter(int filter)
+        {
+            _questFilter = filter;
+            Root.Q<Button>("quest-all").EnableInClassList("hub-filter-active", filter == 0);
+            Root.Q<Button>("quest-active").EnableInClassList("hub-filter-active", filter == 1);
+            Root.Q<Button>("quest-done").EnableInClassList("hub-filter-active", filter == 2);
+            RenderQuests();
+        }
+
+        private void RenderQuests()
+        {
+            var list = Root.Q<VisualElement>("quest-list");
+            list.Clear();
+            if (_profile == null) return;
+
+            int lessons = LessonCatalog.CompletedCount(_profile.id);
+            int score = _profile.finLiteracyScore;
+            int level = _profile.level;
+            int completed = (lessons >= 1 ? 1 : 0) + (score >= 50 ? 1 : 0) + (level >= 3 ? 1 : 0);
+            Root.Q<Label>("quest-summary").text = completed + " из 3 заданий выполнено";
+
+            AddQuest(list, "Заверши первый урок", lessons, 1, "Открыть учебник", () => Navigate(HubTab.Learn));
+            AddQuest(list, "Набери 50 очков знаний", score, 50, "Пройти квиз", () => GameManager.Instance.StartQuiz());
+            AddQuest(list, "Достигни 3 уровня", Math.Max(0, level - 1), 2, "Пройти квиз", () => GameManager.Instance.StartQuiz());
+
+            if (list.childCount == 0)
+            {
+                var empty = new Label("Здесь пока нет заданий для этого фильтра.");
+                empty.AddToClassList("hub-muted");
+                list.Add(empty);
+            }
+        }
+
+        private void AddQuest(VisualElement list, string title, int progress, int target, string action, Action onClick)
+        {
+            bool done = progress >= target;
+            if ((_questFilter == 1 && done) || (_questFilter == 2 && !done)) return;
+
+            var card = new VisualElement();
+            card.AddToClassList("hub-quest-card");
+            if (done) card.AddToClassList("hub-quest-done");
+            var heading = new Label(title);
+            heading.AddToClassList("hub-quest-title");
+            var boundedProgress = Math.Max(0, Math.Min(progress, target));
+            var status = new Label(done ? "Готово ✓" : boundedProgress + "/" + target);
+            status.AddToClassList("hub-quest-progress");
+            var track = new VisualElement();
+            track.AddToClassList("hub-progress-track");
+            var fill = new VisualElement();
+            fill.AddToClassList("hub-progress-fill");
+            fill.style.width = Length.Percent(100f * boundedProgress / target);
+            track.Add(fill);
+            card.Add(heading);
+            card.Add(status);
+            card.Add(track);
+            if (!done)
+            {
+                var button = new Button(onClick) { text = action + " →" };
+                button.AddToClassList("hub-quest-action");
+                card.Add(button);
+            }
+            list.Add(card);
+        }
+
+        private async Task RefreshRating()
+        {
+            var list = Root.Q<VisualElement>("rating-list");
+            var podium = Root.Q<VisualElement>("rating-podium");
+            var status = Root.Q<Label>("rating-status");
+            status.text = "Загружаем рейтинг...";
+            list.Clear();
+            podium.Clear();
+            var result = await IvrApi.Market.GetLeaderboard();
+            if (!result.Success)
+            {
+                status.text = "Не удалось загрузить рейтинг. Нажми «Обновить».";
+                return;
+            }
+            var entries = result.Data;
+            status.text = entries.Count == 0 ? "Пока нет игроков в рейтинге." : "";
+
+            if (entries.Count > 1) AddPodium(podium, entries[1]);
+            if (entries.Count > 0) AddPodium(podium, entries[0]);
+            if (entries.Count > 2) AddPodium(podium, entries[2]);
+
+            foreach (var entry in entries)
+            {
+                var row = new VisualElement();
+                row.AddToClassList("hub-ranking-row");
+                if (_profile != null && entry.playerId == _profile.id) row.AddToClassList("hub-ranking-self");
+                var rank = new Label(entry.rank.ToString());
+                rank.AddToClassList("hub-ranking-rank");
+                var name = new Label(_profile != null && entry.playerId == _profile.id ? "Ты · " + entry.nickname : entry.nickname);
+                name.AddToClassList("hub-ranking-name");
+                var value = new Label(entry.totalValue.ToString("F0") + " ₸");
+                value.AddToClassList("hub-ranking-score");
+                row.Add(rank);
+                row.Add(name);
+                row.Add(value);
+                list.Add(row);
+            }
+        }
+
+        private static void AddPodium(VisualElement podium, LeaderboardEntryDto entry)
+        {
+            var card = new VisualElement();
+            card.AddToClassList("hub-podium-item");
+            if (entry.rank == 1) card.AddToClassList("hub-podium-first");
+            if (entry.rank == 2) card.AddToClassList("hub-podium-second");
+            var rank = new Label("#" + entry.rank);
+            rank.AddToClassList("hub-podium-rank");
+            var name = new Label(entry.nickname);
+            name.AddToClassList("hub-podium-name");
+            var score = new Label(entry.totalValue.ToString("F0") + " ₸");
+            score.AddToClassList("hub-podium-score");
+            card.Add(rank);
+            card.Add(name);
+            card.Add(score);
+            podium.Add(card);
+        }
+
+        private async Task RefreshPortfolio()
+        {
+            var label = Root.Q<Label>("profile-portfolio");
+            var result = await IvrApi.Market.GetPortfolio();
+            label.text = result.Success
+                ? result.Data.totalValue.ToString("F0") + " ₸"
+                : "Не удалось загрузить портфель";
+        }
+
+        private void CloseResult()
+        {
+            Root.Q<VisualElement>("hub-result-overlay").style.display = DisplayStyle.None;
+            _pendingPersonalLessonId = GameManager.Instance.LastLearningLessonId;
+            GameManager.Instance.ClearLastResult();
+            _ = RefreshProfile();
+            if (!string.IsNullOrEmpty(_pendingPersonalLessonId)) Navigate(HubTab.Learn);
+        }
+
+        private void Logout()
+        {
+            IvrApi.Auth.Logout();
+            _learningRequestVersion++;
+            _pendingPersonalLessonId = null;
+            _profile = null;
+            GameManager.Instance.SetProfile(null);
+            GameManager.Instance.ClearLastResult();
+            ScreenManager.Instance.Show(AppScreen.Welcome);
+        }
+    }
+}

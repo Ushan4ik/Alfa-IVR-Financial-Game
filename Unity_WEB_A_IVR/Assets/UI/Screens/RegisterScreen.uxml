@@ -1,0 +1,38 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <ui:VisualElement name="RegisterScreen" class="entry-screen">
+        <ui:ScrollView class="entry-scroll">
+            <ui:VisualElement class="entry-shell">
+                <ui:VisualElement class="entry-header">
+                    <ui:Button name="back-btn" text="‹" class="entry-back" />
+                    <ui:VisualElement class="entry-brand">
+                        <ui:Label text="A" class="entry-logo" />
+                        <ui:Label text="Игра о банковских продуктах" class="entry-brand-name" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="entry-form-top">
+                    <ui:VisualElement class="entry-step-row">
+                        <ui:VisualElement class="entry-step-active" />
+                        <ui:VisualElement class="entry-step" />
+                        <ui:VisualElement class="entry-step" />
+                    </ui:VisualElement>
+                    <ui:Label text="Начнём знакомство" class="entry-title" />
+                    <ui:Label text="Создай аккаунт, чтобы сохранять прогресс и получать награды." class="entry-copy" />
+                </ui:VisualElement>
+                <ui:VisualElement class="entry-form">
+                    <ui:Label text="Как тебя называть?" class="entry-field-label" />
+                    <ui:TextField name="nickname-field" placeholder-text="Твой никнейм" class="entry-input" />
+                    <ui:Label text="Электронная почта" class="entry-field-label" />
+                    <ui:TextField name="email-field" placeholder-text="name@example.com" class="entry-input" />
+                    <ui:Label text="Придумай пароль" class="entry-field-label" />
+                    <ui:TextField name="password-field" placeholder-text="Не меньше 8 символов" password="true" class="entry-input" />
+                    <ui:Label text="Повтори пароль" class="entry-field-label" />
+                    <ui:TextField name="repeat-password-field" placeholder-text="Повтори пароль" password="true" class="entry-input" />
+                    <ui:Label name="status-text" text="" class="entry-status" />
+                    <ui:Button name="register-btn" text="Зарегистрироваться →" class="entry-primary" />
+                    <ui:Button name="login-btn" text="Уже есть аккаунт? Войти" class="entry-link" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ivr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ivr
+      POSTGRES_USER: ivr
+      POSTGRES_PASSWORD: ${IVR_DB_PASSWORD:?Set IVR_DB_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ivr_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ivr -d ivr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  ivr_postgres_data:

@@ -1,0 +1,52 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <ui:VisualElement name="WelcomeScreen" class="entry-screen">
+        <ui:ScrollView class="entry-scroll">
+            <ui:VisualElement class="entry-shell">
+                <ui:VisualElement class="entry-header">
+                    <ui:VisualElement class="entry-brand">
+                        <ui:Label text="A" class="entry-logo" />
+                        <ui:Label text="Игра о банковских продуктах" class="entry-brand-name" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="welcome-hero">
+                    <ui:VisualElement class="welcome-art">
+                        <ui:VisualElement class="welcome-spark welcome-spark-left" />
+                        <ui:VisualElement class="welcome-spark welcome-spark-right" />
+                        <ui:VisualElement class="welcome-card">
+                            <ui:Label text="A" class="welcome-card-logo" />
+                            <ui:Label text="БАНКОВСКАЯ ИГРА" class="welcome-card-caption" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="welcome-coin">
+                            <ui:Label text="₸" class="welcome-coin-text" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="welcome-reward">
+                            <ui:Label text="+10" class="welcome-reward-number" />
+                            <ui:Label text="очков за ответ" class="welcome-reward-caption" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label text="Учись.&#10;Играй.&#10;Зарабатывай." class="welcome-title" />
+                    <ui:Label text="Изучай финансы через вопросы и пробуй себя на виртуальной бирже." class="entry-copy" />
+                </ui:VisualElement>
+                <ui:VisualElement class="welcome-footer">
+                    <ui:VisualElement class="welcome-benefits">
+                        <ui:VisualElement class="welcome-benefit">
+                            <ui:Label text="КВИЗ" class="welcome-benefit-number" />
+                            <ui:Label text="вопросы" class="welcome-benefit-caption" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="welcome-benefit">
+                            <ui:Label text="10K" class="welcome-benefit-number" />
+                            <ui:Label text="вирт. капитал" class="welcome-benefit-caption" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="welcome-benefit">
+                            <ui:Label text="ТОП" class="welcome-benefit-number" />
+                            <ui:Label text="рейтинг" class="welcome-benefit-caption" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="start-btn" text="Начать игру →" class="entry-primary" />
+                    <ui:Button name="login-btn" text="Уже есть аккаунт? Войти" class="entry-link" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

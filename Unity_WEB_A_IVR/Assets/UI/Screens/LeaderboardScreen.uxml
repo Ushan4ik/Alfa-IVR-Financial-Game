@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
+    <ui:VisualElement name="LeaderboardScreen" class="screen" style="flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 24px;">
+
+        <!-- Шапка -->
+        <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <ui:Label text="Лидерборд" class="title" style="margin-bottom: 0;" />
+            <ui:Button name="exit-btn" text="Назад" class="btn-secondary" style="width: 120px; margin-top: 0;" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="card" style="flex-grow: 1;">
+
+            <!-- Заголовок таблицы -->
+            <ui:VisualElement style="flex-direction: row; padding: 6px 8px; margin-bottom: 6px; background-color: rgba(120,100,255,0.12); border-radius: 6px;">
+                <ui:Label text="#" class="profile-label" style="width: 48px;" />
+                <ui:Label text="Игрок" class="profile-label" style="flex-grow: 1;" />
+                <ui:Label text="Наличные" class="profile-label" style="width: 130px; -unity-text-align: upper-right;" />
+                <ui:Label text="Акции" class="profile-label" style="width: 130px; -unity-text-align: upper-right;" />
+                <ui:Label text="Капитал" class="profile-label" style="width: 140px; -unity-text-align: upper-right; font-weight: bold;" />
+            </ui:VisualElement>
+
+            <ui:ScrollView name="leaderboard-list" style="flex-grow: 1;" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
