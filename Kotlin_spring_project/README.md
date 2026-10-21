@@ -7,19 +7,18 @@
 Нужны Docker и JDK 21. Выполняйте команды из этого каталога:
 
 ```bash
-git clone https://github.com/ushan4ik/Alfa-IVR-Financial-Game.git
-cd Alfa-IVR-Financial-Game/Kotlin_spring_project
+cd /home/ushan/IVR_PROJECT/Kotlin_spring_project
 ```
 
-Скопируйте `.env.example` в `.env` и задайте локальный пароль БД. Перед развёртыванием задайте случайный `JWT_SECRET` длиной не менее 32 символов. Секреты не коммитьте. Базовый `application.properties` содержит только безопасные значения для разработки, а `application.properties.example` показывает пример конфигурации внешней PostgreSQL.
+Если файлов нет, скопируйте `.env.example` в `.env`, а `src/main/resources/application.properties.example` — в `application.properties`. Замените заглушки и задайте случайный `jwt.secret` длиной не менее 32 символов. Секреты не коммитьте.
+
+Запускайте БД и сервер одной командой:
 
 ```bash
-set -a
-source .env
-set +a
-docker compose up -d --wait db
-./gradlew bootRun --args='--spring.profiles.active=local'
+./run-local.sh
 ```
+
+Скрипт сам загружает `.env`, поднимает PostgreSQL и запускает Spring с профилем `local`. Если API уже работает на порту 8080, скрипт сообщит об этом и не станет запускать второй экземпляр.
 
 `compose.yaml` создаёт `ivr-postgres` на `127.0.0.1:5432`. Профиль `local` использует БД `ivr`, пользователя `ivr`, пароль из `IVR_DB_PASSWORD`, миграции Flyway и проверку схемы Hibernate. API обычно доступен по `http://localhost:8080`. При запуске из `~` команды `source .env` и `./gradlew` не найдут файлы.
 
