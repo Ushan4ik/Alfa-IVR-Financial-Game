@@ -25,6 +25,7 @@ namespace IVR.Game
         private PortfolioDto _portfolio;
         private MarketStateDto _state;
         private StockDto _selectedStock;
+        private bool _tradeInProgress;
 
         private void Start()
         {
@@ -178,7 +179,7 @@ namespace IVR.Game
 
         private async Task Trade(string type)
         {
-            if (_selectedStock == null) return;
+            if (_selectedStock == null || _tradeInProgress) return;
             int qty = _qtyField.value;
             if (qty <= 0)
             {
@@ -187,20 +188,39 @@ namespace IVR.Game
                 return;
             }
 
-            var result = await IvrApi.Market.PlaceOrder(_selectedStock.id, type, qty);
-            if (!result.Success)
+            _tradeInProgress = true;
+            SetTradeButtonsEnabled(false);
+            _tradeStatus.text = "Выполняем сделку...";
+            try
             {
-                _tradeStatus.text = result.Error;
-                _tradeStatus.style.color = ChangeColor(-1);
-                return;
+                var result = await IvrApi.Market.PlaceOrder(_selectedStock.id, type, qty);
+                if (!result.Success)
+                {
+                    _tradeStatus.text = "Сделка не выполнена: " + result.Error;
+                    _tradeStatus.style.color = ChangeColor(-1);
+                    return;
+                }
+
+                _portfolio = result.Data;
+                _tradeStatus.text = "Сделка выполнена";
+                _tradeStatus.style.color = ChangeColor(1);
+
+                RefreshHeader();
+                SelectStock(_selectedStock);
             }
+            finally
+            {
+                _tradeInProgress = false;
+                SetTradeButtonsEnabled(true);
+            }
+        }
 
-            _portfolio = result.Data;
-            _tradeStatus.text = "Сделка выполнена";
-            _tradeStatus.style.color = ChangeColor(1);
-
-            RefreshHeader();
-            SelectStock(_selectedStock);
+        private void SetTradeButtonsEnabled(bool enabled)
+        {
+            _buyBtn.SetEnabled(enabled);
+            _sellBtn.SetEnabled(enabled);
+            _shortBtn.SetEnabled(enabled);
+            _coverBtn.SetEnabled(enabled);
         }
 
         private static string FormatChange(double percent) => (percent >= 0 ? "+" : "") + $"{percent:F2}%";

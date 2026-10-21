@@ -1,7 +1,9 @@
 package com.example.demo.market
 
 import org.springframework.security.core.Authentication
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/market")
@@ -28,5 +30,9 @@ class MarketController(private val marketService: MarketService) {
 
     @PostMapping("/order")
     fun placeOrder(@RequestBody req: OrderRequest, authentication: Authentication): PortfolioResponse =
-        marketService.placeOrder(authentication.principal as String, req)
+        try {
+            marketService.placeOrder(authentication.principal as String, req)
+        } catch (error: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, error.message, error)
+        }
 }

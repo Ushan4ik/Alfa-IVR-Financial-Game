@@ -155,7 +155,11 @@ class MarketService(
         require(req.quantity > 0) { "Количество должно быть положительным" }
 
         val stock = stockRepository.findById(req.stockId).orElseThrow { IllegalArgumentException("Акция не найдена") }
-        val player = playerRepository.findById(playerId).orElseThrow()
+        // Все сделки одного игрока выполняются последовательно. Без блокировки два
+        // быстрых клика одновременно создавали первую Holding и один запрос падал
+        // на уникальном индексе (player_id, stock_id) с HTTP 500.
+        val player = playerRepository.lockById(playerId)
+            ?: throw IllegalArgumentException("Игрок не найден")
         val holding = holdingRepository.findByPlayerIdAndStockId(playerId, req.stockId)
             ?: Holding(playerId = playerId, stockId = req.stockId)
 

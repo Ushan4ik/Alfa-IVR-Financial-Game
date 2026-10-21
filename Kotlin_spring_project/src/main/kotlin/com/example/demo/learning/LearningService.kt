@@ -19,7 +19,7 @@ class LearningService(
     private val json = jacksonObjectMapper()
     private fun missing(): Nothing = throw ResponseStatusException(HttpStatus.NOT_FOUND)
     private fun bad(message: String): Nothing = throw ResponseStatusException(HttpStatus.BAD_REQUEST, message)
-    private fun lock(playerId: String) { players.lockForLearning(playerId) ?: missing() }
+    private fun lock(playerId: String) { players.lockById(playerId) ?: missing() }
     private fun owned(playerId: String, id: String): LearningAttempt =
         attempts.findById(id).orElse(null)?.takeIf { it.playerId == playerId } ?: missing()
     private fun questions(a: LearningAttempt): List<LearningQuestion> = json.readValue(a.questionsJson)
