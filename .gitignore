@@ -25,3 +25,8 @@
 
 # Secrets and local configuration
 **/.env
+
+# Local WebGL output and runtime files
+**/WebGLBuild/
+**/webgl-build.log
+**/.webgl-server.pid

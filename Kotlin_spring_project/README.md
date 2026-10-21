@@ -18,7 +18,7 @@ cd /home/ushan/IVR_PROJECT/Kotlin_spring_project
 ./run-local.sh
 ```
 
-Скрипт сам загружает `.env`, поднимает PostgreSQL и запускает Spring с профилем `local`. Если API уже работает на порту 8080, скрипт сообщит об этом и не станет запускать второй экземпляр.
+Скрипт сам загружает `.env`, поднимает PostgreSQL, WebGL-сайт и запускает Spring с профилем `local`. API доступен по `http://localhost:8080`, игра — по `http://localhost:8081`. Если API уже работает на порту 8080, скрипт сообщит об этом и не станет запускать второй экземпляр.
 
 `compose.yaml` создаёт `ivr-postgres` на `127.0.0.1:5432`. Профиль `local` использует БД `ivr`, пользователя `ivr`, пароль из `IVR_DB_PASSWORD`, миграции Flyway и проверку схемы Hibernate. API обычно доступен по `http://localhost:8080`. При запуске из `~` команды `source .env` и `./gradlew` не найдут файлы.
 

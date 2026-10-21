@@ -10,6 +10,14 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
+set -a
+# shellcheck disable=SC1091
+source .env
+set +a
+
+docker compose up -d --wait db web
+echo "Unity WebGL: http://localhost:8081"
+
 if ss -ltnH 'sport = :8080' | rg -q '.'; then
   http_code="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/market/state || true)"
   if [[ "$http_code" == "403" || "$http_code" == "200" ]]; then
@@ -22,11 +30,4 @@ if ss -ltnH 'sport = :8080' | rg -q '.'; then
   ss -ltnp 'sport = :8080' || true
   exit 1
 fi
-
-set -a
-# shellcheck disable=SC1091
-source .env
-set +a
-
-docker compose up -d --wait db
 exec ./gradlew bootRun --args='--spring.profiles.active=local'
