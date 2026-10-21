@@ -30,6 +30,23 @@ docker compose ps
 
 Тесты Spring работают на H2. Для остановки сервера нажмите Ctrl+C, для остановки БД выполните `docker compose down`. Данные сохраняются в Docker volume.
 
+### Ошибка `password authentication failed for user "ivr"`
+
+Пароль PostgreSQL записывается в Docker volume при первом создании. Если позднее изменить `IVR_DB_PASSWORD` в `.env`, контейнер продолжит использовать старый пароль. Данные удалять не требуется: при работающем `ivr-postgres` синхронизируйте роль с текущим `.env`:
+
+```bash
+set -a
+source .env
+set +a
+python3 - <<'PY' | docker exec -i ivr-postgres psql -U ivr -d ivr
+import os
+password = os.environ["IVR_DB_PASSWORD"].replace("'", "''")
+print(f"ALTER ROLE ivr WITH PASSWORD '{password}';")
+PY
+```
+
+После сообщения `ALTER ROLE` повторите `bootRun`.
+
 ## Конфигурация
 
 | Параметр | Назначение |
