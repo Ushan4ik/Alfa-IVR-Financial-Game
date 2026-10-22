@@ -1,6 +1,6 @@
 # Spring API и PostgreSQL
 
-Сервер банковской игры: Spring Boot 4.1.0, Kotlin 2.3.21, Java 21, Spring Security/JWT, JPA и PostgreSQL 16. [Общая архитектура](../ARCHITECTURE.md), [персональное обучение](PERSONAL_LEARNING.md).
+Сервер банковской игры: Spring Boot 4.1.0, Kotlin 2.3.21, Java 21, Spring Security/JWT, JPA и PostgreSQL 16. [Общая архитектура](../ARCHITECTURE.md), [персональное обучение](PERSONAL_LEARNING.md), [CI/CD](../docs/CI_CD.md).
 
 ## Локальный запуск
 

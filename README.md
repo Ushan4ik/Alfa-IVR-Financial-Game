@@ -1,5 +1,7 @@
 # IVR Project — банковская игра для молодёжи
 
+[![CI and delivery](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml)
+
 Проект состоит из Unity-клиента и Spring Boot API с PostgreSQL. Игрок регистрируется, проходит вводный квиз, изучает финансовые темы, получает персональный разбор и может играть на учебном рынке акций.
 
 ## Документация
@@ -14,11 +16,12 @@
 - [Персональное обучение](Kotlin_spring_project/PERSONAL_LEARNING.md) — квиз, генерация разбора и повторная попытка.
 - [Пользовательские сценарии и UML](docs/README.md) — сценарии, Use Case, классы, последовательности, ER- и объектная диаграммы.
 - [Техническое задание](docs/TECHNICAL_SPECIFICATION.md) — границы продукта и проверяемые требования.
+- [CI/CD](docs/CI_CD.md) — автоматические тесты, Docker-образ backend и ручная WebGL-сборка.
 - [Проверка полного маршрута](docs/ACCEPTANCE_TEST.md) — ручная приёмка перед исправлением ошибок.
 
 ## Быстрый запуск локально
 
-Нужны Docker, Java 21 и Unity 6000.4.1f1. Команды выполняются **из каталога Spring-проекта**, а не из домашней папки:
+Нужны Docker, Java 21 и Unity 6000.4.6f1. Команды выполняются **из каталога Spring-проекта**, а не из домашней папки:
 
 ```bash
 git clone https://github.com/ushan4ik/Alfa-IVR-Financial-Game.git

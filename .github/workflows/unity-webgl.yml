@@ -1,0 +1,45 @@
+name: Unity WebGL build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  webgl:
+    name: Build WebGL artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Unity secrets
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          if [ -z "$UNITY_LICENSE" ]; then
+            echo "UNITY_LICENSE is required. See docs/CI_CD.md."
+            exit 1
+          fi
+
+      - name: Build Unity WebGL
+        uses: game-ci/unity-builder@v5
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Unity_WEB_A_IVR
+          targetPlatform: WebGL
+          buildMethod: WebGLBuilder.Build
+          buildsPath: builds
+          buildName: WebGLBuild
+
+      - name: Upload WebGL artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: unity-webgl
+          path: Unity_WEB_A_IVR/WebGLBuild
+          if-no-files-found: error
+          retention-days: 14
