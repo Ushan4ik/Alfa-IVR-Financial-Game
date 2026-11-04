@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 namespace IVR.UI
 {
-    public enum HubTab { Home, Learn, Quests, Rating, Profile, Market }
+    public enum HubTab { Home, Learn, MiniGames, Quests, Rating, Profile, Market }
 
     // Общая оболочка главного меню. Новые вкладки добавляются здесь и в HubScreen.uxml.
     public class HubScreen : BaseScreen
@@ -33,6 +33,7 @@ namespace IVR.UI
         {
             BindTab(HubTab.Home, "home");
             BindTab(HubTab.Learn, "learn");
+            BindTab(HubTab.MiniGames, "minigames");
             BindTab(HubTab.Quests, "quests");
             BindTab(HubTab.Rating, "rating");
             BindTab(HubTab.Profile, "profile");
@@ -70,6 +71,7 @@ namespace IVR.UI
             Root.Q<Button>("quest-done").clicked += () => SetQuestFilter(2);
             Root.Q<Button>("rating-refresh").clicked += () => _ = RefreshRating();
             Root.Q<Button>("hub-result-close").clicked += CloseResult;
+            RenderMiniGames();
         }
 
         private void BindTab(HubTab tab, string name)
@@ -316,6 +318,47 @@ namespace IVR.UI
                 empty.AddToClassList("hub-muted");
                 list.Add(empty);
             }
+        }
+
+        private void RenderMiniGames()
+        {
+            var list = Root.Q<VisualElement>("minigame-list");
+            list.Clear();
+            foreach (var game in MiniGameCatalog.All)
+            {
+                var card = new VisualElement();
+                card.AddToClassList("hub-minigame-card");
+
+                var badge = new Label(game.Status);
+                badge.AddToClassList(game.IsAvailable
+                    ? "hub-minigame-badge-ready"
+                    : "hub-minigame-badge-soon");
+                var title = new Label(game.Title);
+                title.AddToClassList("hub-minigame-title");
+                var description = new Label(game.Description);
+                description.AddToClassList("hub-minigame-description");
+                var meta = new Label(game.Duration + " · результат попадёт в ежедневное задание");
+                meta.AddToClassList("hub-minigame-meta");
+                var button = new Button(() => StartMiniGame(game))
+                {
+                    text = game.IsAvailable ? "Играть →" : "Скоро"
+                };
+                button.AddToClassList("hub-minigame-button");
+                button.SetEnabled(game.IsAvailable);
+
+                card.Add(badge);
+                card.Add(title);
+                card.Add(description);
+                card.Add(meta);
+                card.Add(button);
+                list.Add(card);
+            }
+        }
+
+        private static void StartMiniGame(MiniGameDefinition game)
+        {
+            if (!game.IsAvailable) return;
+            GameManager.Instance.LoadGame(game.SceneName);
         }
 
         private void AddQuest(VisualElement list, string title, int progress, int target, string action,

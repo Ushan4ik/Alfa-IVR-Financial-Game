@@ -76,6 +76,17 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
 
+                <ui:VisualElement name="tab-minigames" class="hub-page">
+                    <ui:Label text="Мини-игры" class="hub-title" />
+                    <ui:Label text="Короткие игровые тренировки по финансовой грамотности" class="hub-subtitle" />
+                    <ui:VisualElement class="hub-minigame-hero">
+                        <ui:Label text="ИГРАЙ И ЗАКРЕПЛЯЙ" class="hub-feature-eyebrow" />
+                        <ui:Label text="Новая механика — скоро" class="hub-feature-title" />
+                        <ui:Label text="Первой появится головоломка «Собери капитал»." class="hub-feature-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="minigame-list" class="hub-list" />
+                </ui:VisualElement>
+
                 <ui:VisualElement name="tab-quests" class="hub-page">
                     <ui:Label text="Задания" class="hub-title" />
                     <ui:Label text="Цели растут вместе с твоим прогрессом" class="hub-subtitle" />
@@ -159,6 +170,7 @@
             <ui:VisualElement name="hub-nav" class="hub-nav">
                 <ui:Button name="nav-home" text="Главная" class="hub-nav-button" />
                 <ui:Button name="nav-learn" text="Уроки" class="hub-nav-button" />
+                <ui:Button name="nav-minigames" text="Игры" class="hub-nav-button" />
                 <ui:Button name="nav-quests" text="Задания" class="hub-nav-button" />
                 <ui:Button name="nav-rating" text="Рейтинг" class="hub-nav-button" />
                 <ui:Button name="nav-profile" text="Профиль" class="hub-nav-button" />

@@ -244,6 +244,92 @@
     margin-top: 7px;
 }
 
+.hub-minigame-hero {
+    padding: 18px;
+    margin-top: 8px;
+    margin-bottom: 17px;
+    border-radius: 13px;
+    background-color: rgb(38, 37, 41);
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(169, 238, 68);
+}
+
+.hub-minigame-hero .hub-feature-eyebrow {
+    color: rgb(169, 238, 68);
+}
+
+.hub-minigame-hero .hub-feature-title {
+    color: white;
+}
+
+.hub-minigame-hero .hub-feature-copy {
+    color: rgb(210, 208, 212);
+}
+
+.hub-minigame-card {
+    margin-bottom: 12px;
+    padding: 16px;
+    border-width: 1px;
+    border-color: rgb(234, 231, 236);
+    border-radius: 12px;
+    background-color: white;
+}
+
+.hub-minigame-badge-ready, .hub-minigame-badge-soon {
+    align-self: flex-start;
+    margin-bottom: 9px;
+    padding: 4px 9px;
+    border-radius: 12px;
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.hub-minigame-badge-ready {
+    color: rgb(43, 124, 35);
+    background-color: rgb(224, 248, 211);
+}
+
+.hub-minigame-badge-soon {
+    color: rgb(145, 71, 23);
+    background-color: rgb(255, 235, 214);
+}
+
+.hub-minigame-title {
+    margin-bottom: 6px;
+    color: rgb(31, 29, 33);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.hub-minigame-description {
+    margin-bottom: 9px;
+    color: rgb(86, 82, 89);
+    font-size: 13px;
+    white-space: normal;
+}
+
+.hub-minigame-meta {
+    margin-bottom: 12px;
+    color: rgb(129, 124, 131);
+    font-size: 11px;
+    white-space: normal;
+}
+
+.hub-minigame-button {
+    width: 100%;
+    height: 40px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgb(242, 0, 48);
+    color: white;
+    -unity-font-style: bold;
+}
+
+.hub-minigame-button:disabled {
+    background-color: rgb(231, 228, 232);
+    color: rgb(141, 136, 143);
+}
+
 .hub-lesson-detail {
     margin-top: 8px;
 }
