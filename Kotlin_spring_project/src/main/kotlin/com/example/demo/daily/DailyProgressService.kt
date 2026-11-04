@@ -24,7 +24,7 @@ class DailyProgressService(
         return response(repository.save(state.copy(testsCompleted = 1)))
     }
 
-    // Будущая мини-игра вызывает этот метод только после успешного завершения партии.
+    // Вызов идемпотентно отмечает ежедневное задание после первого игрового действия.
     @Transactional
     fun recordMiniGame(playerId: String): DailyProgressResponse {
         val state = touch(playerId)
@@ -70,7 +70,7 @@ class DailyProgressService(
                 progress = state.miniGamesPlayed,
                 target = 1,
                 completed = state.miniGamesPlayed >= 1,
-                available = false
+                available = true
             )
         )
         return DailyProgressResponse(

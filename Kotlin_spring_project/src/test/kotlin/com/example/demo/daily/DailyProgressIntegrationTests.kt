@@ -3,7 +3,6 @@ package com.example.demo.daily
 import com.example.demo.player.Player
 import com.example.demo.player.PlayerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,11 +34,15 @@ class DailyProgressIntegrationTests {
         assertEquals(1, first.currentStreak)
         assertEquals(0, first.completedCount)
         assertEquals(2, first.totalCount)
-        assertFalse(first.quests.single { it.id == "PLAY_MINIGAME" }.available)
+        assertTrue(first.quests.single { it.id == "PLAY_MINIGAME" }.available)
 
         service.recordTest(playerId)
         service.recordTest(playerId)
         assertEquals(1, repository.findById(playerId).orElseThrow().testsCompleted)
+
+        service.recordMiniGame(playerId)
+        service.recordMiniGame(playerId)
+        assertEquals(1, repository.findById(playerId).orElseThrow().miniGamesPlayed)
 
         val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
         repository.save(DailyProgress(

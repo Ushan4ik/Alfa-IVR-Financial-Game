@@ -21,7 +21,7 @@ namespace IVR.Api.Services
             return ApiResult<DailyProgressDto>.Ok(JsonUtility.FromJson<DailyProgressDto>(result.Data));
         }
 
-        // Будущая мини-игра вызывает этот метод после завершения партии.
+        // Мини-игра вызывает этот метод после первого игрового действия.
         public async Task<ApiResult<DailyProgressDto>> CompleteMiniGame()
         {
             var result = await _client.Post("/daily/minigame-completed", new { });

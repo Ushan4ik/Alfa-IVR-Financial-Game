@@ -330,6 +330,34 @@
     color: rgb(141, 136, 143);
 }
 
+.hub-clicker-screen {
+    flex-grow: 1;
+    min-height: 520px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.hub-clicker-button {
+    flex-grow: 1;
+    width: 100%;
+    min-height: 470px;
+    border-width: 0;
+    border-radius: 24px;
+    background-color: rgb(242, 0, 48);
+    color: white;
+    font-size: 28px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.hub-clicker-button:hover {
+    background-color: rgb(217, 0, 43);
+}
+
+.hub-clicker-button:active {
+    background-color: rgb(184, 0, 37);
+}
+
 .hub-lesson-detail {
     margin-top: 8px;
 }

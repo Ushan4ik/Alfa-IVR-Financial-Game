@@ -12,7 +12,7 @@ class DailyProgressController(private val service: DailyProgressService) {
     @GetMapping
     fun get(auth: Authentication) = service.get(auth.principal as String)
 
-    // Точка интеграции для будущей мини-игры.
+    // Точка интеграции для завершения ежедневного задания мини-игры.
     @PostMapping("/minigame-completed")
     fun miniGameCompleted(auth: Authentication) = service.recordMiniGame(auth.principal as String)
 }

@@ -24,6 +24,9 @@ namespace IVR.UI
         private string _pendingPersonalLessonId;
         private HubTab _activeTab;
         private int _questFilter; // 0 — все, 1 — в процессе, 2 — готово
+        private int _officeClicks;
+        private bool _miniGameReported;
+        private bool _miniGameReportInFlight;
         private MarketPanel _market;
 
         public HubScreen(VisualTreeAsset asset, VisualElement container)
@@ -71,6 +74,7 @@ namespace IVR.UI
             Root.Q<Button>("quest-done").clicked += () => SetQuestFilter(2);
             Root.Q<Button>("rating-refresh").clicked += () => _ = RefreshRating();
             Root.Q<Button>("hub-result-close").clicked += CloseResult;
+            Root.Q<Button>("office-clicker-button").clicked += OnOfficeClick;
             RenderMiniGames();
         }
 
@@ -124,6 +128,7 @@ namespace IVR.UI
 
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
             if (tab == HubTab.Learn) { CloseLesson(); _ = RefreshPersonalLessons(); }
+            if (tab == HubTab.MiniGames) ShowMiniGameCatalog();
             if (tab == HubTab.Quests) _ = RefreshDailyProgress();
             if (tab == HubTab.Rating) _ = RefreshRating();
             if (tab == HubTab.Profile) _ = RefreshPortfolio();
@@ -306,9 +311,9 @@ namespace IVR.UI
             {
                 Action action = quest.id == "COMPLETE_TEST"
                     ? () => GameManager.Instance.StartQuiz()
-                    : null;
+                    : quest.id == "PLAY_MINIGAME" ? () => Navigate(HubTab.MiniGames) : null;
                 AddQuest(list, quest.title, quest.progress, quest.target,
-                    quest.id == "COMPLETE_TEST" ? "Пройти тест" : "Мини-игра появится позже",
+                    quest.id == "COMPLETE_TEST" ? "Пройти тест" : "Играть",
                     quest.available, action);
             }
 
@@ -355,10 +360,47 @@ namespace IVR.UI
             }
         }
 
-        private static void StartMiniGame(MiniGameDefinition game)
+        private void StartMiniGame(MiniGameDefinition game)
         {
             if (!game.IsAvailable) return;
+            if (game.Id == "office-clicker")
+            {
+                _officeClicks = 0;
+                Root.Q<Button>("office-clicker-button").text = ClickerButtonText();
+                Root.Q<VisualElement>("minigame-catalog").style.display = DisplayStyle.None;
+                Root.Q<VisualElement>("office-clicker").style.display = DisplayStyle.Flex;
+                Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+                return;
+            }
             GameManager.Instance.LoadGame(game.SceneName);
+        }
+
+        private void ShowMiniGameCatalog()
+        {
+            Root.Q<VisualElement>("minigame-catalog").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("office-clicker").style.display = DisplayStyle.None;
+        }
+
+        private void OnOfficeClick()
+        {
+            _officeClicks++;
+            Root.Q<Button>("office-clicker-button").text = ClickerButtonText();
+            if (!_miniGameReported && !_miniGameReportInFlight)
+                _ = ReportMiniGamePlayed();
+        }
+
+        private string ClickerButtonText() => "РАЗВИВАТЬ ОФИС\n\nКликов: " + _officeClicks;
+
+        private async Task ReportMiniGamePlayed()
+        {
+            _miniGameReportInFlight = true;
+            var result = await IvrApi.Daily.CompleteMiniGame();
+            _miniGameReportInFlight = false;
+            if (!result.Success) return;
+            _dailyProgress = result.Data;
+            _miniGameReported = _dailyProgress.quests != null &&
+                _dailyProgress.quests.Exists(quest => quest.id == "PLAY_MINIGAME" && quest.completed);
+            Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
         }
 
         private void AddQuest(VisualElement list, string title, int progress, int target, string action,
@@ -416,6 +458,8 @@ namespace IVR.UI
             }
 
             _dailyProgress = result.Data;
+            _miniGameReported = _dailyProgress.quests != null &&
+                _dailyProgress.quests.Exists(quest => quest.id == "PLAY_MINIGAME" && quest.completed);
             Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
             if (_activeTab == HubTab.Quests) RenderQuests();
         }
@@ -503,6 +547,9 @@ namespace IVR.UI
             _pendingPersonalLessonId = null;
             _profile = null;
             _dailyProgress = null;
+            _officeClicks = 0;
+            _miniGameReported = false;
+            _miniGameReportInFlight = false;
             GameManager.Instance.SetProfile(null);
             GameManager.Instance.ClearLastResult();
             ScreenManager.Instance.Show(AppScreen.Welcome);

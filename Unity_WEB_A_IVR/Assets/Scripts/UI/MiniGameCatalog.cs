@@ -10,32 +10,35 @@ namespace IVR.UI
         public string Duration { get; }
         public string Status { get; }
         public string SceneName { get; }
+        public bool IsBuiltIn { get; }
 
-        public bool IsAvailable => !string.IsNullOrEmpty(SceneName);
+        public bool IsAvailable => IsBuiltIn || !string.IsNullOrEmpty(SceneName);
 
         public MiniGameDefinition(string id, string title, string description, string duration,
-            string status, string sceneName = "")
+            string status, bool isBuiltIn = false, string sceneName = "")
         {
             Id = id;
             Title = title;
             Description = description;
             Duration = duration;
             Status = status;
+            IsBuiltIn = isBuiltIn;
             SceneName = sceneName;
         }
     }
 
-    // Чтобы подключить игру, добавь сцену в Build Settings и укажи её имя в SceneName.
+    // Простые игры открываются внутри Hub, крупные можно подключать отдельной сценой через SceneName.
     public static class MiniGameCatalog
     {
         public static readonly IReadOnlyList<MiniGameDefinition> All = new[]
         {
             new MiniGameDefinition(
-                "block-puzzle",
-                "Собери капитал",
-                "Размещай финансовые блоки, собирай линии и увеличивай виртуальный капитал.",
-                "3–5 минут",
-                "В разработке"),
+                "office-clicker",
+                "Офис мечты",
+                "Нажимай, развивай компанию и подготовь офис к будущим отделам и улучшениям.",
+                "Без ограничений",
+                "Доступно",
+                true),
             new MiniGameDefinition(
                 "budget-basket",
                 "Финансовая корзина",
