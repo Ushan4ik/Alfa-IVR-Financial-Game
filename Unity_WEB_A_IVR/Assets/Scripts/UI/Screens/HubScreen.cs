@@ -17,6 +17,7 @@ namespace IVR.UI
         private readonly Dictionary<HubTab, VisualElement> _pages = new();
         private readonly Dictionary<HubTab, Button> _navButtons = new();
         private PlayerProfile _profile;
+        private DailyProgressDto _dailyProgress;
         private LessonDefinition _selectedLesson;
         private PersonalLessonDto _selectedPersonalLesson;
         private int _learningRequestVersion;
@@ -84,6 +85,7 @@ namespace IVR.UI
             base.Show();
             _learningRequestVersion++;
             Root.Q<Label>("top-score").text = "Загрузка...";
+            Root.Q<Label>("top-streak").text = "Серия —";
             Root.Q<Label>("home-greeting").text = "Привет!";
             Root.Q<Label>("profile-name").text = "Игрок";
             Root.Q<Label>("profile-email").text = "";
@@ -91,6 +93,7 @@ namespace IVR.UI
             Root.Q<VisualElement>("hub-result-overlay").style.display = DisplayStyle.None;
             Navigate(HubTab.Home);
             _ = RefreshProfile();
+            _ = RefreshDailyProgress();
 
             var result = GameManager.Instance?.LastResult;
             if (result != null)
@@ -119,7 +122,7 @@ namespace IVR.UI
 
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
             if (tab == HubTab.Learn) { CloseLesson(); _ = RefreshPersonalLessons(); }
-            if (tab == HubTab.Quests) RenderQuests();
+            if (tab == HubTab.Quests) _ = RefreshDailyProgress();
             if (tab == HubTab.Rating) _ = RefreshRating();
             if (tab == HubTab.Profile) _ = RefreshPortfolio();
             if (tab == HubTab.Market) _ = _market.Refresh();
@@ -171,6 +174,8 @@ namespace IVR.UI
             Root.Q<Label>("home-level").text = "УРОВЕНЬ " + _profile.level;
             Root.Q<Label>("home-score").text = _profile.finLiteracyScore.ToString();
             Root.Q<Label>("home-lessons").text = LessonCatalog.CompletedCount(_profile.id) + "/" + LessonCatalog.All.Count;
+            if (_dailyProgress != null)
+                Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
             foreach (var lesson in LessonCatalog.All)
                 Root.Q<Button>("home-" + lesson.Key).text =
                     (LessonCatalog.IsCompleted(_profile.id, lesson.Id) ? "✓  " : "○  ") + lesson.Title + "    →";
@@ -283,17 +288,27 @@ namespace IVR.UI
         {
             var list = Root.Q<VisualElement>("quest-list");
             list.Clear();
-            if (_profile == null) return;
+            if (_dailyProgress == null)
+            {
+                Root.Q<Label>("quest-summary").text = "Загружаем задания...";
+                Root.Q<Label>("quest-streak").text = "Серия входов загружается";
+                return;
+            }
 
-            int lessons = LessonCatalog.CompletedCount(_profile.id);
-            int score = _profile.finLiteracyScore;
-            int level = _profile.level;
-            int completed = (lessons >= 1 ? 1 : 0) + (score >= 50 ? 1 : 0) + (level >= 3 ? 1 : 0);
-            Root.Q<Label>("quest-summary").text = completed + " из 3 заданий выполнено";
+            Root.Q<Label>("quest-summary").text = _dailyProgress.completedCount + " из " +
+                _dailyProgress.totalCount + " заданий выполнено";
+            Root.Q<Label>("quest-streak").text = "Серия входов: " + _dailyProgress.currentStreak +
+                " · рекорд: " + _dailyProgress.bestStreak;
 
-            AddQuest(list, "Заверши первый урок", lessons, 1, "Открыть учебник", () => Navigate(HubTab.Learn));
-            AddQuest(list, "Набери 50 очков знаний", score, 50, "Пройти квиз", () => GameManager.Instance.StartQuiz());
-            AddQuest(list, "Достигни 3 уровня", Math.Max(0, level - 1), 2, "Пройти квиз", () => GameManager.Instance.StartQuiz());
+            foreach (var quest in _dailyProgress.quests)
+            {
+                Action action = quest.id == "COMPLETE_TEST"
+                    ? () => GameManager.Instance.StartQuiz()
+                    : null;
+                AddQuest(list, quest.title, quest.progress, quest.target,
+                    quest.id == "COMPLETE_TEST" ? "Пройти тест" : "Мини-игра появится позже",
+                    quest.available, action);
+            }
 
             if (list.childCount == 0)
             {
@@ -303,7 +318,8 @@ namespace IVR.UI
             }
         }
 
-        private void AddQuest(VisualElement list, string title, int progress, int target, string action, Action onClick)
+        private void AddQuest(VisualElement list, string title, int progress, int target, string action,
+            bool available, Action onClick)
         {
             bool done = progress >= target;
             if ((_questFilter == 1 && done) || (_questFilter == 2 && !done)) return;
@@ -325,13 +341,40 @@ namespace IVR.UI
             card.Add(heading);
             card.Add(status);
             card.Add(track);
-            if (!done)
+            if (!done && available)
             {
                 var button = new Button(onClick) { text = action + " →" };
                 button.AddToClassList("hub-quest-action");
                 card.Add(button);
             }
+            else if (!done)
+            {
+                var unavailable = new Label(action);
+                unavailable.AddToClassList("hub-muted");
+                card.Add(unavailable);
+            }
             list.Add(card);
+        }
+
+        private async Task RefreshDailyProgress()
+        {
+            var result = await IvrApi.Daily.GetProgress();
+            if (ScreenManager.Instance.Current != AppScreen.Hub || !IvrApi.Auth.IsLoggedIn) return;
+            if (!result.Success)
+            {
+                if (_activeTab == HubTab.Quests)
+                {
+                    _dailyProgress = null;
+                    Root.Q<Label>("quest-summary").text = "Не удалось загрузить задания";
+                    Root.Q<Label>("quest-streak").text = "Проверь соединение с сервером";
+                    Root.Q<VisualElement>("quest-list").Clear();
+                }
+                return;
+            }
+
+            _dailyProgress = result.Data;
+            Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
+            if (_activeTab == HubTab.Quests) RenderQuests();
         }
 
         private async Task RefreshRating()
@@ -406,6 +449,7 @@ namespace IVR.UI
             _pendingPersonalLessonId = GameManager.Instance.LastLearningLessonId;
             GameManager.Instance.ClearLastResult();
             _ = RefreshProfile();
+            _ = RefreshDailyProgress();
             if (!string.IsNullOrEmpty(_pendingPersonalLessonId)) Navigate(HubTab.Learn);
         }
 
@@ -415,6 +459,7 @@ namespace IVR.UI
             _learningRequestVersion++;
             _pendingPersonalLessonId = null;
             _profile = null;
+            _dailyProgress = null;
             GameManager.Instance.SetProfile(null);
             GameManager.Instance.ClearLastResult();
             ScreenManager.Instance.Show(AppScreen.Welcome);

@@ -1,5 +1,6 @@
 package com.example.demo.learning
 
+import com.example.demo.daily.DailyProgressService
 import com.example.demo.player.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -14,7 +15,8 @@ class LearningService(
     private val progress: PlayerProgressRepository,
     private val attempts: LearningAttemptRepository,
     private val lessons: PersonalLessonRepository,
-    private val generator: LessonGenerator
+    private val generator: LessonGenerator,
+    private val dailyProgress: DailyProgressService
 ) {
     private val json = jacksonObjectMapper()
     private fun missing(): Nothing = throw ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -95,6 +97,7 @@ class LearningService(
             attempt.lessonId = lesson.id
             attempt.finished = true
             attempts.save(attempt)
+            dailyProgress.recordTest(playerId)
             if (attempt.parentLessonId.isNotBlank() && passed) {
                 val parent = lessons.findById(attempt.parentLessonId).orElseThrow()
                 parent.completed = true

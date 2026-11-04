@@ -1,6 +1,7 @@
 package com.example.demo.learning
 
 import com.example.demo.auth.JwtService
+import com.example.demo.daily.DailyProgressRepository
 import com.example.demo.player.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.*
@@ -27,6 +28,7 @@ class LearningIntegrationTests {
     @Autowired lateinit var progress: PlayerProgressRepository
     @Autowired lateinit var lessons: PersonalLessonRepository
     @Autowired lateinit var attempts: LearningAttemptRepository
+    @Autowired lateinit var dailyProgress: DailyProgressRepository
     @Autowired lateinit var generator: LessonGenerator
     @Autowired lateinit var jwt: JwtService
     @LocalServerPort var port: Int = 0
@@ -101,6 +103,7 @@ class LearningIntegrationTests {
             val results = pool.invokeAll(List(2) { Callable { service.finish(p, a.id) } }).map { it.get() }
             assertEquals(results[0], results[1])
             assertEquals(30, progress.findById(p).orElseThrow().finLiteracyScore)
+            assertEquals(1, dailyProgress.findById(p).orElseThrow().testsCompleted)
             assertEquals(1, service.list(p).size)
             val b = service.start(p, StartRequest(topicId = "lesson_savings")); answerAll(p, b)
             service.finish(p, b.id)

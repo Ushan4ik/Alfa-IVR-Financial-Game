@@ -35,5 +35,26 @@ if [[ ! -f "$PROJECT_DIR/WebGLBuild/index.html" ]]; then
   exit 1
 fi
 
+# Имена Unity-артефактов постоянны. Версия в URL не даёт браузеру смешать
+# framework/wasm/data от разных сборок после очередного локального build.
+BUILD_VERSION="$(date -u +%Y%m%d%H%M%S)"
+python3 - "$PROJECT_DIR/WebGLBuild/index.html" "$BUILD_VERSION" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+index = Path(sys.argv[1])
+version = sys.argv[2]
+html = index.read_text(encoding="utf-8")
+for asset in (
+    "WebGLBuild.loader.js",
+    "WebGLBuild.data",
+    "WebGLBuild.framework.js",
+    "WebGLBuild.wasm",
+):
+    html = re.sub(re.escape(asset) + r"(?:\?v=[0-9]+)?", f"{asset}?v={version}", html)
+index.write_text(html, encoding="utf-8")
+PY
+
 echo "Сборка готова: $PROJECT_DIR/WebGLBuild/index.html"
 echo "Запуск в браузере: ./serve-web.sh"

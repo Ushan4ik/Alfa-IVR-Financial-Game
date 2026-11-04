@@ -12,6 +12,7 @@ namespace IVR
         public static QuestionService Questions { get; private set; }
         public static LearningService Learning { get; private set; }
         public static MarketService  Market    { get; private set; }
+        public static DailyService   Daily     { get; private set; }
 
         public static void Init(string baseUrl)
         {
@@ -22,6 +23,7 @@ namespace IVR
             Questions = new QuestionService(client);
             Market    = new MarketService(client);
             Learning = new LearningService(client);
+            Daily = new DailyService(client);
         }
     }
 }

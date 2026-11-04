@@ -31,6 +31,21 @@
     align-items: center;
 }
 
+.hub-top-actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.hub-streak-pill {
+    padding: 6px 9px;
+    margin-right: 6px;
+    border-radius: 16px;
+    background-color: rgb(255, 239, 220);
+    color: rgb(199, 83, 21);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
 .hub-logo {
     width: 28px;
     height: 28px;

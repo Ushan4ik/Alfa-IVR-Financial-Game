@@ -8,7 +8,10 @@
                     <ui:Label text="A" class="hub-logo" />
                     <ui:Label text="Игра о финансах" class="hub-brand-text" />
                 </ui:VisualElement>
-                <ui:Label name="top-score" text="0 очков" class="hub-score-pill" />
+                <ui:VisualElement class="hub-top-actions">
+                    <ui:Label name="top-streak" text="Серия —" class="hub-streak-pill" />
+                    <ui:Label name="top-score" text="0 очков" class="hub-score-pill" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:ScrollView name="hub-scroll" class="hub-scroll">
@@ -77,9 +80,9 @@
                     <ui:Label text="Задания" class="hub-title" />
                     <ui:Label text="Цели растут вместе с твоим прогрессом" class="hub-subtitle" />
                     <ui:VisualElement class="hub-quest-banner">
-                        <ui:Label text="ТВОЙ ПРОГРЕСС" class="hub-feature-eyebrow" />
-                        <ui:Label name="quest-summary" text="0 из 3 заданий" class="hub-feature-title" />
-                        <ui:Label text="Новые знания открывают новые цели" class="hub-feature-copy" />
+                        <ui:Label text="ЕЖЕДНЕВНЫЕ ЗАДАНИЯ" class="hub-feature-eyebrow" />
+                        <ui:Label name="quest-summary" text="0 из 2 заданий выполнено" class="hub-feature-title" />
+                        <ui:Label name="quest-streak" text="Серия входов: 1 · рекорд: 1" class="hub-feature-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="hub-filters">
                         <ui:Button name="quest-all" text="Все" class="hub-filter hub-filter-active" />

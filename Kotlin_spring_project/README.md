@@ -56,8 +56,9 @@ PY
 | `ml.service.url` | Адрес классификатора интересов; при недоступности возвращается `другое` |
 | `GEMINI_API_KEY`, `GEMINI_MODEL` | Необязательная генерация текста уроков; без них действует fallback |
 | `learning.generation-delay-ms` | Интервал обработки уроков `PENDING`, по умолчанию 5000 мс |
+| `DAILY_ZONE` | Часовой пояс ежедневной серии и заданий, по умолчанию `Europe/Moscow` |
 
-`application-dev.properties` содержит `create-drop` и отключает Flyway для быстрых H2-тестов. Профиль `local` применяет SQL из `src/main/resources/db/migration`, затем запускает Hibernate с `ddl-auto=validate`. Существующая схема автоматически принимается как baseline версии 1; миграция V2 добавляет роли. Новая пустая БД проходит V1 и V2 с нуля.
+`application-dev.properties` содержит `create-drop` и отключает Flyway для быстрых H2-тестов. Профиль `local` применяет SQL из `src/main/resources/db/migration`, затем запускает Hibernate с `ddl-auto=validate`. Существующая схема автоматически принимается как baseline версии 1; миграция V2 добавляет роли, V3 — ежедневный прогресс. Новая пустая БД проходит V1–V3 с нуля.
 
 ## API
 
@@ -73,6 +74,8 @@ PY
 | `POST /learning/attempts/{id}/answers` | Зафиксировать и проверить ответ |
 | `POST /learning/attempts/{id}/finish` | Результат, очки и персональный урок |
 | `GET /learning/lessons`, `GET /learning/profile` | Уроки и прогресс по темам |
+| `GET /daily` | Текущая серия и два ежедневных задания |
+| `POST /daily/minigame-completed` | Зачесть первую мини-игру текущего дня |
 | `GET /market/state`, `/stocks`, `/stocks/{id}/history`, `/news` | Состояние учебного рынка |
 | `GET /market/leaderboard`, `/portfolio` | Рейтинг и портфель |
 | `POST /market/order` | BUY, SELL, SHORT или COVER |
@@ -87,6 +90,6 @@ PY
 
 ## Где менять логику
 
-`auth` — регистрация, BCrypt, JWT; `player` — профиль и интересы; `learning` — каталог, попытки, очки, уроки и worker Gemini; `market` — цены, новости, портфели, заявки и scheduler; `quiz` — старый каталог; `ml` — клиент внешнего классификатора. Правила размещены в сервисах, JPA-сущности и репозитории — рядом с пакетами домена.
+`auth` — регистрация, BCrypt, JWT; `player` — профиль и интересы; `daily` — серия и ежедневные задания; `learning` — каталог, попытки, очки, уроки и worker Gemini; `market` — цены, новости, портфели, заявки и scheduler; `quiz` — старый каталог; `ml` — клиент внешнего классификатора. Правила размещены в сервисах, JPA-сущности и репозитории — рядом с пакетами домена.
 
 Панель `src/main/resources/static/admin.html` есть для разработки. Её HTML доступен как оболочка, но данные и изменения сервер разрешает только JWT пользователя с ролью ADMIN.

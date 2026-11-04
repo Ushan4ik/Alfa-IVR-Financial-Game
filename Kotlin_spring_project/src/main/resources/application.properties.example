@@ -28,3 +28,6 @@ ml.service.url=http://localhost:8000
 learning.gemini.key=${GEMINI_API_KEY:}
 learning.gemini.model=${GEMINI_MODEL:}
 spring.task.scheduling.pool.size=2
+
+# Daily streak and quest calendar.
+app.daily-zone=${DAILY_ZONE:Europe/Moscow}

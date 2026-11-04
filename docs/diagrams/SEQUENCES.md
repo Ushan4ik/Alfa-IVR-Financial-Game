@@ -105,3 +105,25 @@ sequenceDiagram
     Service-->>API: PortfolioResponse
     API-->>UI: Новый баланс и позиции
 ```
+
+## Ежедневная серия и задание за тест
+
+```mermaid
+sequenceDiagram
+    actor User as Игрок
+    participant Hub as HubScreen
+    participant Daily as DailyProgressController
+    participant Learning as LearningService
+    participant DB as PostgreSQL
+
+    User->>Hub: Открыть главное меню
+    Hub->>Daily: GET /daily
+    Daily->>DB: Заблокировать игрока и обновить календарный день
+    Daily-->>Hub: currentStreak, bestStreak, quests
+    User->>Learning: Завершить тест
+    Learning->>DB: Зафиксировать первое завершение попытки
+    Learning->>DB: testsCompleted = 1
+    User->>Hub: Вернуться к заданиям
+    Hub->>Daily: GET /daily
+    Daily-->>Hub: COMPLETE_TEST 1/1
+```

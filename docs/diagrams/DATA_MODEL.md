@@ -13,6 +13,7 @@ erDiagram
     PERSONAL_LESSON ||--o{ LEARNING_ATTEMPT : repeated_by
     PLAYER ||--o{ HOLDING : owns
     PLAYER ||--o{ MARKET_ORDER : places
+    PLAYER ||--|| DAILY_PROGRESS : tracks
     STOCK ||--o{ HOLDING : held_as
     STOCK ||--o{ MARKET_ORDER : traded_in
     STOCK ||--o{ PRICE_POINT : has_history
@@ -32,6 +33,14 @@ erDiagram
         int fin_literacy_score
         int level
         timestamp last_updated
+    }
+    DAILY_PROGRESS {
+        string player_id PK
+        date activity_date
+        int current_streak
+        int best_streak
+        int tests_completed
+        int mini_games_played
     }
     LEARNING_ATTEMPT {
         string id PK
@@ -86,7 +95,7 @@ erDiagram
     }
 ```
 
-Дополнительные независимые сущности: `NEWS_EVENT` хранит новость игрового дня и влияние на сектор; `MARKET_STATE` — единственную строку с текущим днём и интервалом; `QUESTION` — старый административный каталог вопросов.
+Дополнительные независимые сущности: `NEWS_EVENT` хранит новость игрового дня и влияние на сектор; `MARKET_STATE` — единственную строку с текущим днём и интервалом; `QUESTION` — старый административный каталог вопросов. `DAILY_PROGRESS` обновляется при первом запросе пользователя в новый день и хранит текущую/лучшую серию и два дневных счётчика.
 
 ## Объектная диаграмма примера
 
