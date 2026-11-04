@@ -4,7 +4,9 @@
 
 Начальная сцена — `Assets/Scenes/Main.unity`. `AppEntry` на объекте `APP` инициализирует API, проверяет JWT и выбирает Welcome или Hub. `ScreenManager` переключает Welcome, Login, Register, Onboarding и Hub внутри одного `UIDocument`. Каждый экран имеет UXML/USS и обработчик на базе `BaseScreen`.
 
-`Assets/Resources/UI/HubScreen.uxml` содержит оболочку меню и вкладки Home, Learn, Quests, Rating, Profile, Market. `HubScreen.cs` меняет вкладки и загружает профиль, уроки и рейтинг. `MarketPanel.cs` обслуживает вложенный экран рынка. Для новой вкладки нужны секция и кнопка UXML, значение `HubTab` и привязки в `HubScreen.cs`.
+`Assets/Resources/UI/HubScreen.uxml` содержит оболочку меню и вкладки Home, Learn, MiniGames, Quests, Rating, Profile, Market. `HubScreen.cs` меняет вкладки и загружает профиль, уроки и рейтинг. `MarketPanel.cs` обслуживает вложенный экран рынка. Для новой вкладки нужны секция и кнопка UXML, значение `HubTab` и привязки в `HubScreen.cs`.
+
+Все `UIDocument` используют общий `Assets/UI Toolkit/PanelSettings.asset`. Он настроен на `Scale With Screen Size`, эталон `440×844` и смешанное сравнение ширины и высоты. На портретном экране интерфейс занимает доступную ширину, а на широком браузерном окне мобильная колонка ограничивается `max-width: 440px` и остаётся читаемой. Корневые контейнеры задаются в процентах и растут через Flexbox; фиксированные размеры используются только для кнопок, значков и минимально удобных областей нажатия.
 
 Квиз находится в отдельной сцене `Quiz`: `QuizUI.cs` показывает состояния интерфейса, `QuizManager.cs` создаёт серверную попытку, отправляет ответы и завершает её. Очки, уровень и персональный урок определяет Spring через `/learning/attempts/{id}/finish`. При недоступном API доступны локальные вопросы как тренировка без сохранения.
 
