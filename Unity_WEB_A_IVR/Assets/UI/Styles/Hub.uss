@@ -45,6 +45,28 @@
     -unity-font-style: bold;
 }
 
+.hub-top-pill {
+    min-width: 0;
+    min-height: 28px;
+    height: 28px;
+    border-width: 0;
+    -unity-text-align: middle-center;
+}
+
+.hub-coin-pill {
+    min-width: 0;
+    height: 28px;
+    margin-right: 6px;
+    padding-left: 9px;
+    padding-right: 9px;
+    border-width: 0;
+    border-radius: 16px;
+    background-color: rgb(255, 246, 193);
+    color: rgb(145, 104, 7);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
 .hub-logo {
     width: 28px;
     height: 28px;
@@ -58,6 +80,7 @@
 }
 
 .hub-brand-text {
+    display: none;
     color: rgb(31, 31, 34);
     font-size: 13px;
     -unity-font-style: bold;
@@ -840,4 +863,45 @@
     -unity-font-style: bold;
     margin-top: 15px;
     margin-bottom: 12px;
+}
+
+.hub-economy-card {
+    align-items: stretch;
+}
+
+.hub-economy-highlight {
+    margin-top: 7px;
+    margin-bottom: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: rgb(255, 241, 218);
+    color: rgb(151, 73, 14);
+    font-size: 14px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.hub-reward-row {
+    margin-bottom: 9px;
+    padding: 12px;
+    border-width: 1px;
+    border-color: rgb(234, 230, 235);
+    border-radius: 9px;
+    background-color: rgb(251, 250, 251);
+    color: rgb(50, 47, 52);
+    font-size: 13px;
+    white-space: normal;
+}
+
+.hub-economy-status {
+    min-height: 18px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    -unity-text-align: middle-center;
+}
+
+.hub-modal-close {
+    align-self: center;
+    margin-top: 9px;
+    margin-bottom: 0;
 }

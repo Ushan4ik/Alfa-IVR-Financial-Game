@@ -21,6 +21,7 @@ data class AdminPlayerResponse(
     val email: String,
     val nickname: String,
     val cash: Double,
+    val coins: Int,
     val level: Int,
     val finLiteracyScore: Int,
     val interests: List<String>,
@@ -29,6 +30,7 @@ data class AdminPlayerResponse(
 
 data class AdminUpdatePlayerRequest(
     val cash: Double? = null,
+    val coins: Int? = null,
     val level: Int? = null,
     val finLiteracyScore: Int? = null,
     val nickname: String? = null

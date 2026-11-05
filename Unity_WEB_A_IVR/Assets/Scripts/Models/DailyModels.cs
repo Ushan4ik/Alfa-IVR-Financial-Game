@@ -23,5 +23,18 @@ namespace IVR.Models
         public int completedCount;
         public int totalCount;
         public List<DailyQuestDto> quests;
+        public int coins;
+        public double marketCash;
+        public List<StreakRewardDto> streakRewards;
+    }
+
+    [Serializable]
+    public class StreakRewardDto
+    {
+        public int days;
+        public int coins;
+        public int marketCash;
+        public bool unlocked;
+        public bool claimed;
     }
 }

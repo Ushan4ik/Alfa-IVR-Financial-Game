@@ -26,6 +26,9 @@ data class Player(
     // стартовый виртуальный капитал для биржевой мини-игры
     val cash: Double = 10_000.0,
 
+    // Премиальная игровая валюта. Начисляется только сервером.
+    val coins: Int = 0,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: PlayerRole = PlayerRole.PLAYER,

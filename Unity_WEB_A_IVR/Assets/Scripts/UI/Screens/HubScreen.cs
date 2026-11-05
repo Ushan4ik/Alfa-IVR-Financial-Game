@@ -31,6 +31,8 @@ namespace IVR.UI
         private int _officeClicks;
         private bool _miniGameReported;
         private bool _miniGameReportInFlight;
+        private bool _economyRequestInFlight;
+        private int _nextStreakRewardDays;
         private MarketPanel _market;
 
         public HubScreen(VisualTreeAsset asset, VisualElement container)
@@ -54,6 +56,12 @@ namespace IVR.UI
             Root.Q<Button>("profile-market").clicked += () => Navigate(HubTab.Market);
             Root.Q<Button>("profile-interests-button").clicked += () => ScreenManager.Instance.ShowInterests();
             Root.Q<Button>("profile-logout").clicked += Logout;
+            Root.Q<Button>("top-streak").clicked += OpenStreakRewards;
+            Root.Q<Button>("top-coins").clicked += OpenCoinShop;
+            Root.Q<Button>("streak-reward-close").clicked += CloseStreakRewards;
+            Root.Q<Button>("streak-reward-claim").clicked += () => _ = ClaimNextStreakReward();
+            Root.Q<Button>("coin-shop-close").clicked += CloseCoinShop;
+            Root.Q<Button>("coin-shop-exchange").clicked += () => _ = ExchangeCoin();
 
             Root.Q<Button>("lesson-back").clicked += CloseLesson;
             Root.Q<Button>("lesson-story-next").clicked += ShowLessonLearningStep;
@@ -95,12 +103,15 @@ namespace IVR.UI
             base.Show();
             _learningRequestVersion++;
             Root.Q<Label>("top-score").text = "Загрузка...";
-            Root.Q<Label>("top-streak").text = "Серия —";
+            Root.Q<Button>("top-streak").text = "🔥 —";
+            Root.Q<Button>("top-coins").text = "◉ 0";
             Root.Q<Label>("home-greeting").text = "Привет!";
             Root.Q<Label>("profile-name").text = "Игрок";
             Root.Q<Label>("profile-email").text = "";
             Root.Q<Label>("profile-portfolio").text = "Загрузка...";
             Root.Q<VisualElement>("hub-result-overlay").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("streak-rewards-overlay").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("coin-shop-overlay").style.display = DisplayStyle.None;
             Navigate(HubTab.Home);
             _ = RefreshProfile();
             _ = RefreshDailyProgress();
@@ -186,7 +197,7 @@ namespace IVR.UI
             Root.Q<Label>("home-score").text = _profile.finLiteracyScore.ToString();
             Root.Q<Label>("home-lessons").text = LessonCatalog.CompletedCount(_profile.id) + "/" + LessonCatalog.All.Count;
             if (_dailyProgress != null)
-                Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
+                RenderEconomyCounters();
             RenderTopicButtons("home-topic-list", "hub-path-item", true);
         }
 
@@ -494,9 +505,9 @@ namespace IVR.UI
 
             foreach (var quest in _dailyProgress.quests)
             {
-                Action action = quest.id == "COMPLETE_TEST"
-                    ? () => GameManager.Instance.StartQuiz()
-                    : quest.id == "PLAY_MINIGAME" ? () => Navigate(HubTab.MiniGames) : null;
+                Action action = null;
+                if (quest.id == "COMPLETE_TEST") action = () => GameManager.Instance.StartQuiz();
+                else if (quest.id == "PLAY_MINIGAME") action = () => Navigate(HubTab.MiniGames);
                 AddQuest(list, quest.title, quest.progress, quest.target,
                     quest.id == "COMPLETE_TEST" ? "Пройти тест" : "Играть",
                     quest.available, action);
@@ -585,7 +596,7 @@ namespace IVR.UI
             _dailyProgress = result.Data;
             _miniGameReported = _dailyProgress.quests != null &&
                 _dailyProgress.quests.Exists(quest => quest.id == "PLAY_MINIGAME" && quest.completed);
-            Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
+            RenderEconomyCounters();
         }
 
         private void AddQuest(VisualElement list, string title, int progress, int target, string action,
@@ -645,8 +656,146 @@ namespace IVR.UI
             _dailyProgress = result.Data;
             _miniGameReported = _dailyProgress.quests != null &&
                 _dailyProgress.quests.Exists(quest => quest.id == "PLAY_MINIGAME" && quest.completed);
-            Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
+            RenderEconomyCounters();
             if (_activeTab == HubTab.Quests) RenderQuests();
+            if (Root.Q<VisualElement>("streak-rewards-overlay").resolvedStyle.display == DisplayStyle.Flex)
+                RenderStreakRewards();
+            if (Root.Q<VisualElement>("coin-shop-overlay").resolvedStyle.display == DisplayStyle.Flex)
+                RenderCoinShop();
+        }
+
+        private void RenderEconomyCounters()
+        {
+            if (_dailyProgress == null) return;
+            Root.Q<Button>("top-streak").text = "🔥 " + _dailyProgress.currentStreak;
+            Root.Q<Button>("top-coins").text = "◉ " + _dailyProgress.coins;
+        }
+
+        private void OpenStreakRewards()
+        {
+            Root.Q<Label>("streak-reward-status").text = "";
+            Root.Q<VisualElement>("streak-rewards-overlay").style.display = DisplayStyle.Flex;
+            RenderStreakRewards();
+            if (_dailyProgress == null) _ = RefreshDailyProgress();
+        }
+
+        private void CloseStreakRewards() =>
+            Root.Q<VisualElement>("streak-rewards-overlay").style.display = DisplayStyle.None;
+
+        private void RenderStreakRewards()
+        {
+            var current = Root.Q<Label>("streak-current");
+            var next = Root.Q<Label>("streak-next");
+            var claimButton = Root.Q<Button>("streak-reward-claim");
+            if (_dailyProgress == null)
+            {
+                current.text = "Текущая серия загружается…";
+                next.text = "Сейчас покажем следующую награду";
+                claimButton.SetEnabled(false);
+                return;
+            }
+
+            current.text = "Текущая серия: " + _dailyProgress.currentStreak +
+                " · рекорд: " + _dailyProgress.bestStreak;
+            _nextStreakRewardDays = 0;
+            StreakRewardDto nextReward = null;
+            if (_dailyProgress.streakRewards != null)
+            {
+                foreach (var reward in _dailyProgress.streakRewards)
+                {
+                    var state = reward.claimed ? " · Получено ✓"
+                        : reward.unlocked ? " · Можно получить" : " · Пока закрыто";
+                    var line = reward.days + " дней · " + reward.coins + " коинов · " +
+                        reward.marketCash + " ₸ на бирже" + state;
+                    if (reward.days == 7) Root.Q<Label>("streak-reward-7").text = line;
+                    if (reward.days == 14) Root.Q<Label>("streak-reward-14").text = line;
+                    if (!reward.claimed && nextReward == null) nextReward = reward;
+                }
+            }
+
+            if (nextReward == null)
+            {
+                next.text = "Все доступные награды серии уже получены.";
+                claimButton.text = "Все награды получены";
+                claimButton.SetEnabled(false);
+                return;
+            }
+
+            _nextStreakRewardDays = nextReward.days;
+            var daysLeft = Math.Max(0, nextReward.days - _dailyProgress.currentStreak);
+            next.text = nextReward.unlocked
+                ? "Награда за " + nextReward.days + " дней уже доступна!"
+                : "Следующая награда через " + daysLeft + " дн. — на " + nextReward.days + " день серии";
+            claimButton.text = nextReward.unlocked
+                ? "Получить: " + nextReward.coins + " коинов + " + nextReward.marketCash + " ₸"
+                : "Награда откроется на " + nextReward.days + " день";
+            claimButton.SetEnabled(nextReward.unlocked && !_economyRequestInFlight);
+        }
+
+        private async Task ClaimNextStreakReward()
+        {
+            if (_economyRequestInFlight || _nextStreakRewardDays <= 0) return;
+            _economyRequestInFlight = true;
+            Root.Q<Button>("streak-reward-claim").SetEnabled(false);
+            Root.Q<Label>("streak-reward-status").text = "Начисляем награду…";
+            var result = await IvrApi.Daily.ClaimStreakReward(_nextStreakRewardDays);
+            _economyRequestInFlight = false;
+            if (!result.Success)
+            {
+                Root.Q<Label>("streak-reward-status").text = "Не удалось получить награду: " + result.Error;
+                RenderStreakRewards();
+                return;
+            }
+            _dailyProgress = result.Data;
+            Root.Q<Label>("streak-reward-status").text = "Награда получена и добавлена на баланс ✓";
+            RenderEconomyCounters();
+            RenderStreakRewards();
+            if (_activeTab == HubTab.Quests) RenderQuests();
+        }
+
+        private void OpenCoinShop()
+        {
+            Root.Q<Label>("coin-shop-status").text = "";
+            Root.Q<VisualElement>("coin-shop-overlay").style.display = DisplayStyle.Flex;
+            RenderCoinShop();
+            if (_dailyProgress == null) _ = RefreshDailyProgress();
+        }
+
+        private void CloseCoinShop() =>
+            Root.Q<VisualElement>("coin-shop-overlay").style.display = DisplayStyle.None;
+
+        private void RenderCoinShop()
+        {
+            var button = Root.Q<Button>("coin-shop-exchange");
+            if (_dailyProgress == null)
+            {
+                Root.Q<Label>("coin-shop-balance").text = "Баланс загружается…";
+                button.SetEnabled(false);
+                return;
+            }
+            Root.Q<Label>("coin-shop-balance").text = "Баланс: " + _dailyProgress.coins +
+                " коинов · " + _dailyProgress.marketCash.ToString("F0") + " ₸ на бирже";
+            button.SetEnabled(_dailyProgress.coins > 0 && !_economyRequestInFlight);
+        }
+
+        private async Task ExchangeCoin()
+        {
+            if (_economyRequestInFlight || _dailyProgress == null || _dailyProgress.coins <= 0) return;
+            _economyRequestInFlight = true;
+            Root.Q<Button>("coin-shop-exchange").SetEnabled(false);
+            Root.Q<Label>("coin-shop-status").text = "Выполняем обмен…";
+            var result = await IvrApi.Daily.ExchangeCoin();
+            _economyRequestInFlight = false;
+            if (!result.Success)
+            {
+                Root.Q<Label>("coin-shop-status").text = "Обмен не выполнен: " + result.Error;
+                RenderCoinShop();
+                return;
+            }
+            _dailyProgress = result.Data;
+            Root.Q<Label>("coin-shop-status").text = "+1000 ₸ добавлено на биржевой баланс ✓";
+            RenderEconomyCounters();
+            RenderCoinShop();
         }
 
         private async Task RefreshRating()

@@ -30,6 +30,7 @@ class AdminPlayerController(
                 email = player.email,
                 nickname = player.nickname,
                 cash = player.cash,
+                coins = player.coins,
                 level = progress.level,
                 finLiteracyScore = progress.finLiteracyScore,
                 interests = player.interests.split(",").filter { it.isNotBlank() },
@@ -44,7 +45,8 @@ class AdminPlayerController(
         val player = playerRepository.findById(id).orElseThrow { IllegalArgumentException("Игрок не найден") }
         val updatedPlayer = player.copy(
             nickname = req.nickname ?: player.nickname,
-            cash = req.cash ?: player.cash
+            cash = req.cash ?: player.cash,
+            coins = req.coins ?: player.coins
         )
         playerRepository.save(updatedPlayer)
 
@@ -63,6 +65,7 @@ class AdminPlayerController(
             email = updatedPlayer.email,
             nickname = updatedPlayer.nickname,
             cash = updatedPlayer.cash,
+            coins = updatedPlayer.coins,
             level = req.level ?: progress.level,
             finLiteracyScore = req.finLiteracyScore ?: progress.finLiteracyScore,
             interests = updatedPlayer.interests.split(",").filter { it.isNotBlank() },

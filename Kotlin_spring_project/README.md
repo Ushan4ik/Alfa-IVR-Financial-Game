@@ -78,6 +78,8 @@ PY
 | `GET /learning/lessons`, `GET /learning/profile` | Уроки и прогресс по темам |
 | `GET /daily` | Текущая серия и два ежедневных задания |
 | `POST /daily/minigame-completed` | Зачесть первую мини-игру текущего дня |
+| `POST /daily/streak-rewards/{days}/claim` | Один раз получить открытую награду за серию |
+| `POST /daily/coins/exchange` | Обменять 1 коин на 1000 виртуальных денег биржи |
 | `GET /market/state`, `/stocks`, `/stocks/{id}/history`, `/news` | Состояние учебного рынка |
 | `GET /market/leaderboard`, `/portfolio` | Рейтинг и портфель |
 | `POST /market/order` | BUY, SELL, SHORT или COVER |

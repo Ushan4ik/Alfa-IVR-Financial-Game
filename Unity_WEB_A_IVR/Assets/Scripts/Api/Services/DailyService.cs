@@ -29,5 +29,21 @@ namespace IVR.Api.Services
                 return ApiResult<DailyProgressDto>.Fail(result.Error);
             return ApiResult<DailyProgressDto>.Ok(JsonUtility.FromJson<DailyProgressDto>(result.Data));
         }
+
+        public async Task<ApiResult<DailyProgressDto>> ClaimStreakReward(int days)
+        {
+            var result = await _client.Post("/daily/streak-rewards/" + days + "/claim", new { });
+            if (!result.Success)
+                return ApiResult<DailyProgressDto>.Fail(result.Error);
+            return ApiResult<DailyProgressDto>.Ok(JsonUtility.FromJson<DailyProgressDto>(result.Data));
+        }
+
+        public async Task<ApiResult<DailyProgressDto>> ExchangeCoin()
+        {
+            var result = await _client.Post("/daily/coins/exchange", new { });
+            if (!result.Success)
+                return ApiResult<DailyProgressDto>.Fail(result.Error);
+            return ApiResult<DailyProgressDto>.Ok(JsonUtility.FromJson<DailyProgressDto>(result.Data));
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.example.demo.player.Player
 import com.example.demo.player.PlayerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,6 +23,7 @@ class DailyProgressIntegrationTests {
     @Autowired lateinit var service: DailyProgressService
     @Autowired lateinit var repository: DailyProgressRepository
     @Autowired lateinit var players: PlayerRepository
+    @Autowired lateinit var rewardClaims: StreakRewardClaimRepository
 
     private fun player() = players.save(
         Player(email = "${UUID.randomUUID()}@test.invalid", passwordHash = "unused")
@@ -65,5 +67,39 @@ class DailyProgressIntegrationTests {
             currentStreak = 3
         ))
         assertEquals(1, service.get(playerId).currentStreak)
+    }
+
+    @Test
+    fun `streak reward is claimed once and coin can be exchanged for market cash`() {
+        val playerId = player()
+        val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
+        repository.save(DailyProgress(
+            playerId = playerId,
+            activityDate = today,
+            currentStreak = 7,
+            bestStreak = 7
+        ))
+
+        val rewarded = service.claimStreakReward(playerId, 7)
+        assertEquals(4, rewarded.coins)
+        assertEquals(12_000.0, rewarded.marketCash)
+        assertTrue(rewarded.streakRewards.single { it.days == 7 }.claimed)
+        assertEquals(1, rewardClaims.findByPlayerId(playerId).size)
+        assertThrows(org.springframework.web.server.ResponseStatusException::class.java) {
+            service.claimStreakReward(playerId, 7)
+        }
+
+        val exchanged = service.exchangeCoin(playerId)
+        assertEquals(3, exchanged.coins)
+        assertEquals(13_000.0, exchanged.marketCash)
+
+        repository.save(repository.findById(playerId).orElseThrow().copy(
+            currentStreak = 14,
+            bestStreak = 14
+        ))
+        val secondReward = service.claimStreakReward(playerId, 14)
+        assertEquals(11, secondReward.coins)
+        assertEquals(16_000.0, secondReward.marketCash)
+        assertTrue(secondReward.streakRewards.single { it.days == 14 }.claimed)
     }
 }

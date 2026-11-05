@@ -9,7 +9,8 @@
                     <ui:Label text="Игра о финансах" class="hub-brand-text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="hub-top-actions">
-                    <ui:Label name="top-streak" text="Серия —" class="hub-streak-pill" />
+                    <ui:Button name="top-streak" text="🔥 —" class="hub-streak-pill hub-top-pill" />
+                    <ui:Button name="top-coins" text="◉ 0" class="hub-coin-pill hub-top-pill" />
                     <ui:Label name="top-score" text="0 очков" class="hub-score-pill" />
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -205,6 +206,31 @@
                 <ui:Button name="nav-quests" text="Задания" class="hub-nav-button" />
                 <ui:Button name="nav-rating" text="Рейтинг" class="hub-nav-button" />
                 <ui:Button name="nav-profile" text="Профиль" class="hub-nav-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="streak-rewards-overlay" class="hub-overlay" style="display: none;">
+            <ui:VisualElement class="hub-result-card hub-economy-card">
+                <ui:Label text="Награды за серию" class="hub-title" />
+                <ui:Label name="streak-current" text="Текущая серия: —" class="hub-subtitle" />
+                <ui:Label name="streak-next" text="Загружаем следующую награду…" class="hub-economy-highlight" />
+                <ui:Label name="streak-reward-7" text="7 дней · 4 коина · 2000 на бирже" class="hub-reward-row" />
+                <ui:Label name="streak-reward-14" text="14 дней · 8 коинов · 3000 на бирже" class="hub-reward-row" />
+                <ui:Label name="streak-reward-status" text="" class="hub-muted hub-economy-status" />
+                <ui:Button name="streak-reward-claim" text="Получить награду" class="hub-primary" />
+                <ui:Button name="streak-reward-close" text="Закрыть" class="hub-text-button hub-modal-close" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="coin-shop-overlay" class="hub-overlay" style="display: none;">
+            <ui:VisualElement class="hub-result-card hub-economy-card">
+                <ui:Label text="Магазин коинов" class="hub-title" />
+                <ui:Label name="coin-shop-balance" text="Баланс: 0 коинов" class="hub-economy-highlight" />
+                <ui:Label text="Обменяй один коин на игровую валюту для виртуальной биржи." class="hub-subtitle" />
+                <ui:Label text="1 коин = 1000 ₸ на бирже" class="hub-reward-row" />
+                <ui:Label name="coin-shop-status" text="" class="hub-muted hub-economy-status" />
+                <ui:Button name="coin-shop-exchange" text="Обменять 1 коин → 1000 ₸" class="hub-primary" />
+                <ui:Button name="coin-shop-close" text="Закрыть" class="hub-text-button hub-modal-close" />
             </ui:VisualElement>
         </ui:VisualElement>
 
