@@ -22,34 +22,37 @@
             </ui:VisualElement>
 
             <ui:ScrollView name="hub-scroll" class="hub-scroll">
-                <ui:VisualElement name="tab-home" class="hub-page">
-                    <ui:VisualElement class="hub-greeting-row">
-                        <ui:VisualElement>
-                            <ui:Label name="home-greeting" text="Привет!" class="hub-title" />
-                            <ui:Label text="Продолжим путь к финансовым знаниям?" class="hub-subtitle" />
+                <ui:VisualElement name="tab-home" class="hub-page hub-home-page">
+                    <ui:VisualElement name="home-fixed-panel" class="hub-home-fixed-panel">
+                        <ui:VisualElement class="hub-greeting-row">
+                            <ui:VisualElement>
+                                <ui:Label name="home-greeting" text="Привет!" class="hub-title" />
+                                <ui:Label text="Продолжим путь к финансовым знаниям?" class="hub-subtitle" />
+                            </ui:VisualElement>
+                            <ui:Button name="home-avatar" text="А" class="hub-avatar" />
                         </ui:VisualElement>
-                        <ui:Button name="home-avatar" text="А" class="hub-avatar" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="hub-feature">
-                        <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
-                        <ui:Label name="home-selected-title" text="Накопления" class="hub-feature-title" />
-                        <ui:Label name="home-selected-summary" text="Как приблизиться к денежной цели" class="hub-feature-copy" />
-                        <ui:Button name="home-start-quiz" text="Открыть урок →" class="hub-feature-button" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="hub-stats-row">
-                        <ui:VisualElement class="hub-stat">
-                            <ui:Label name="home-score" text="0" class="hub-stat-value" />
-                            <ui:Label text="очков знаний" class="hub-stat-label" />
+                        <ui:VisualElement class="hub-feature hub-home-feature">
+                            <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
+                            <ui:Label name="home-selected-title" text="Накопления" class="hub-feature-title" />
+                            <ui:Label name="home-selected-summary" text="Как приблизиться к денежной цели" class="hub-feature-copy" />
+                            <ui:Button name="home-start-quiz" text="Открыть урок →" class="hub-feature-button" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="hub-stat">
-                            <ui:Label name="home-lessons" text="0/11" class="hub-stat-value" />
-                            <ui:Label text="тем пройдено" class="hub-stat-label" />
+                        <ui:VisualElement class="hub-stats-row hub-home-stats">
+                            <ui:VisualElement class="hub-stat">
+                                <ui:Label name="home-score" text="0" class="hub-stat-value" />
+                                <ui:Label text="очков знаний" class="hub-stat-label" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="hub-stat">
+                                <ui:Label name="home-lessons" text="0/11" class="hub-stat-value" />
+                                <ui:Label text="тем пройдено" class="hub-stat-label" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
+                        <ui:Label text="Дорожка уроков" class="hub-section-title hub-home-path-title" />
+                        <ui:Label text="Нажми на кружок, чтобы выбрать тему" class="hub-muted hub-path-help" />
                     </ui:VisualElement>
-                    <ui:Button name="home-market" text="Виртуальная биржа →" class="hub-outline" />
-                    <ui:Label text="Дорожка уроков" class="hub-section-title" />
-                    <ui:Label text="Нажми на кружок, чтобы выбрать тему" class="hub-muted hub-path-help" />
-                    <ui:VisualElement name="home-topic-list" class="hub-level-path" />
+                    <ui:ScrollView name="home-level-scroll" class="hub-level-scroll">
+                        <ui:VisualElement name="home-topic-list" class="hub-level-path" />
+                    </ui:ScrollView>
                 </ui:VisualElement>
 
                 <ui:VisualElement name="tab-learn" class="hub-page">
@@ -119,6 +122,7 @@
                             <ui:Label text="Кликер «Офис мечты» уже доступен" class="hub-feature-title" />
                             <ui:Label text="Начни с кликов, а затем мы добавим отделы, сотрудников и пассивный доход." class="hub-feature-copy" />
                         </ui:VisualElement>
+                        <ui:Button name="games-market" text="Открыть виртуальную биржу →" class="hub-outline hub-games-market" />
                         <ui:VisualElement name="minigame-list" class="hub-list" />
                     </ui:VisualElement>
                     <ui:VisualElement name="office-clicker" class="hub-clicker-screen" style="display: none;">

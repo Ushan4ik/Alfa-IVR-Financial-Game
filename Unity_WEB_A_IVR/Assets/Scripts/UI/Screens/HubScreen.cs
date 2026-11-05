@@ -57,7 +57,7 @@ namespace IVR.UI
             };
             Root.Q<Button>("home-avatar").clicked += () => Navigate(HubTab.Profile);
             Root.Q<Button>("profile-quiz").clicked += () => GameManager.Instance.StartQuiz();
-            Root.Q<Button>("home-market").clicked += () => Navigate(HubTab.Market);
+            Root.Q<Button>("games-market").clicked += () => Navigate(HubTab.Market);
             Root.Q<Button>("profile-market").clicked += () => Navigate(HubTab.Market);
             Root.Q<Button>("profile-interests-button").clicked += () => ScreenManager.Instance.ShowInterests();
             Root.Q<Button>("profile-logout").clicked += Logout;
@@ -92,7 +92,15 @@ namespace IVR.UI
                 if (_hasPendingLessons && !_learningRefreshInFlight && _activeTab == HubTab.Learn &&
                     IvrApi.Auth.IsLoggedIn) _ = RefreshPersonalLessons();
             }).Every(3000);
+            Root.Q<ScrollView>("hub-scroll").RegisterCallback<GeometryChangedEvent>(_ => ResizeHomePage());
             RenderMiniGames();
+        }
+
+        private void ResizeHomePage()
+        {
+            var viewportHeight = Root.Q<ScrollView>("hub-scroll").contentViewport.resolvedStyle.height;
+            if (viewportHeight > 0f)
+                Root.Q<VisualElement>("tab-home").style.height = viewportHeight;
         }
 
         private void BindTab(HubTab tab, string name)
@@ -147,6 +155,11 @@ namespace IVR.UI
                 tab == HubTab.Market ? DisplayStyle.None : DisplayStyle.Flex;
 
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+            if (tab == HubTab.Home)
+            {
+                Root.schedule.Execute(ResizeHomePage);
+                Root.Q<ScrollView>("home-level-scroll").scrollOffset = Vector2.zero;
+            }
             if (tab == HubTab.Learn) { CloseLesson(); _ = RefreshPersonalLessons(); }
             if (tab == HubTab.MiniGames) ShowMiniGameCatalog();
             if (tab == HubTab.Quests) _ = RefreshDailyProgress();

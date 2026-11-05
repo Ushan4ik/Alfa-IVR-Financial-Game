@@ -986,3 +986,43 @@
 .hub-level-node-done {
     color: rgb(255, 255, 255);
 }
+
+/* На главной верхняя карточка остаётся неподвижной, прокручивается только дорожка. */
+.hub-home-page {
+    flex-shrink: 0;
+    padding-top: 16px;
+    padding-bottom: 8px;
+    overflow: hidden;
+}
+
+.hub-home-fixed-panel {
+    flex-shrink: 0;
+}
+
+.hub-home-feature {
+    margin-bottom: 10px;
+}
+
+.hub-home-stats {
+    margin-bottom: 10px;
+}
+
+.hub-home-path-title {
+    margin-bottom: 8px;
+}
+
+.hub-level-scroll {
+    width: 100%;
+    flex-grow: 1;
+    min-height: 150px;
+    margin-top: 2px;
+}
+
+.hub-level-scroll .unity-scroll-view__content-container {
+    align-items: stretch;
+}
+
+.hub-games-market {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
