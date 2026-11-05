@@ -57,9 +57,15 @@ data class AnswerRequest(val questionId: String = "", val selectedIndex: Int = -
 data class AnswerResponse(val correct: Boolean, val correctIndex: Int, val explanation: String)
 data class FinishResponse(val score: Int, val awardedScore: Int, val correctCount: Int, val total: Int,
     val passed: Boolean, val lessonId: String)
+data class LessonCharacter(val name: String = "", val age: Int = 0, val personality: String = "")
+data class LessonTerm(val term: String = "", val text: String = "", val definition: String = "", val example: String = "")
 data class LessonContent(val title: String = "", val explanation: String = "", val example: String = "",
-    val cheatSheet: List<String> = emptyList())
+    val cheatSheet: List<String> = emptyList(), val story: String = "", val takeaway: String = "",
+    val character: LessonCharacter? = null, val terms: List<LessonTerm> = emptyList(),
+    val source: String = "fallback", val modelVersion: String = "")
 data class LessonResponse(val id: String, val topicId: String, val status: String, val completed: Boolean,
-    val title: String, val explanation: String, val example: String, val cheatSheet: List<String>)
+    val title: String, val explanation: String, val example: String, val cheatSheet: List<String>,
+    val story: String, val takeaway: String, val character: LessonCharacter?, val terms: List<LessonTerm>,
+    val source: String, val modelVersion: String)
 data class TopicProgress(val topicId: String, val title: String, val correct: Int, val total: Int)
 data class LearningProfile(val diagnosticCompleted: Boolean, val topics: List<TopicProgress>)

@@ -30,6 +30,7 @@ class LearningIntegrationTests {
     @Autowired lateinit var attempts: LearningAttemptRepository
     @Autowired lateinit var dailyProgress: DailyProgressRepository
     @Autowired lateinit var generator: LessonGenerator
+    @Autowired lateinit var gemini: GeminiLessonProvider
     @Autowired lateinit var jwt: JwtService
     @LocalServerPort var port: Int = 0
     private val json = jacksonObjectMapper()
@@ -147,11 +148,11 @@ class LearningIntegrationTests {
         fun response(text: String, reason: String = "STOP") = json.writeValueAsString(mapOf(
             "candidates" to listOf(mapOf("finishReason" to reason, "content" to mapOf("parts" to listOf(mapOf("text" to text)))))))
         val content = LessonContent("Вклады", "Короткий разбор", "Учебный пример", listOf("Проверяй условия"))
-        assertEquals(content, generator.parseResponse(response(json.writeValueAsString(content))))
-        assertThrows(Exception::class.java) { generator.parseResponse(response("{}")) }
-        assertThrows(Exception::class.java) { generator.parseResponse(response("not JSON")) }
-        assertThrows(Exception::class.java) { generator.parseResponse(response(json.writeValueAsString(content), "MAX_TOKENS")) }
-        assertThrows(Exception::class.java) { generator.parseResponse(response(json.writeValueAsString(content.copy(title = "x".repeat(101))))) }
+        assertEquals(content.copy(source = "gemini"), gemini.parseResponse(response(json.writeValueAsString(content))))
+        assertThrows(Exception::class.java) { gemini.parseResponse(response("{}")) }
+        assertThrows(Exception::class.java) { gemini.parseResponse(response("not JSON")) }
+        assertThrows(Exception::class.java) { gemini.parseResponse(response(json.writeValueAsString(content), "MAX_TOKENS")) }
+        assertThrows(Exception::class.java) { gemini.parseResponse(response(json.writeValueAsString(content.copy(title = "x".repeat(101))))) }
     }
 
     @Test fun `player cannot use admin APIs while admin can manage content`() {

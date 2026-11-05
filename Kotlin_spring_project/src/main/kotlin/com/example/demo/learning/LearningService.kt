@@ -110,7 +110,8 @@ class LearningService(
     @Transactional(readOnly = true)
     fun list(playerId: String) = lessons.findByPlayerIdOrderByCreatedAtDesc(playerId).map { l ->
         val c: LessonContent = json.readValue(l.contentJson)
-        LessonResponse(l.id, l.topicId, l.status, l.completed, c.title, c.explanation, c.example, c.cheatSheet)
+        LessonResponse(l.id, l.topicId, l.status, l.completed, c.title, c.explanation, c.example, c.cheatSheet,
+            c.story, c.takeaway, c.character, c.terms, c.source, c.modelVersion)
     }
 
     @Transactional(readOnly = true)
