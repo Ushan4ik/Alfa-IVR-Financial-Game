@@ -20,6 +20,7 @@ namespace IVR.UI
         private PlayerProfile _profile;
         private DailyProgressDto _dailyProgress;
         private LessonDefinition _selectedLesson;
+        private LessonDefinition _selectedHomeLesson;
         private PersonalLessonDto _selectedPersonalLesson;
         private int _learningRequestVersion;
         private int _topicStoryRequestVersion;
@@ -49,7 +50,11 @@ namespace IVR.UI
             _pages[HubTab.Market] = Root.Q<VisualElement>("tab-market");
             _market = new MarketPanel(Root, () => Navigate(HubTab.Home));
 
-            Root.Q<Button>("home-start-quiz").clicked += () => GameManager.Instance.StartQuiz();
+            Root.Q<Button>("home-start-quiz").clicked += () =>
+            {
+                if (_selectedHomeLesson != null) OpenLesson(_selectedHomeLesson);
+                else GameManager.Instance.StartQuiz();
+            };
             Root.Q<Button>("home-avatar").clicked += () => Navigate(HubTab.Profile);
             Root.Q<Button>("profile-quiz").clicked += () => GameManager.Instance.StartQuiz();
             Root.Q<Button>("home-market").clicked += () => Navigate(HubTab.Market);
@@ -103,8 +108,8 @@ namespace IVR.UI
             base.Show();
             _learningRequestVersion++;
             Root.Q<Label>("top-score").text = "Загрузка...";
-            Root.Q<Button>("top-streak").text = "🔥 —";
-            Root.Q<Button>("top-coins").text = "◉ 0";
+            Root.Q<Label>("top-streak-value").text = "—";
+            Root.Q<Label>("top-coins-value").text = "0";
             Root.Q<Label>("home-greeting").text = "Привет!";
             Root.Q<Label>("profile-name").text = "Игрок";
             Root.Q<Label>("profile-email").text = "";
@@ -193,12 +198,59 @@ namespace IVR.UI
         {
             if (_profile == null) return;
             Root.Q<Label>("home-greeting").text = "Привет, " + _profile.nickname + "!";
-            Root.Q<Label>("home-level").text = "УРОВЕНЬ " + _profile.level;
+            if (_selectedHomeLesson == null)
+                _selectedHomeLesson = FindFirstAvailableHomeLesson();
+            UpdateHomeLessonHeader();
             Root.Q<Label>("home-score").text = _profile.finLiteracyScore.ToString();
             Root.Q<Label>("home-lessons").text = LessonCatalog.CompletedCount(_profile.id) + "/" + LessonCatalog.All.Count;
             if (_dailyProgress != null)
                 RenderEconomyCounters();
-            RenderTopicButtons("home-topic-list", "hub-path-item", true);
+            RenderHomeLessonPath();
+        }
+
+        private LessonDefinition FindFirstAvailableHomeLesson()
+        {
+            foreach (var lesson in LessonCatalog.All)
+                if (_profile == null || !LessonCatalog.IsCompleted(_profile.id, lesson.Id))
+                    return lesson;
+            return LessonCatalog.All.Count > 0 ? LessonCatalog.All[0] : null;
+        }
+
+        private void UpdateHomeLessonHeader()
+        {
+            if (_selectedHomeLesson == null) return;
+            var index = 0;
+            for (var i = 0; i < LessonCatalog.All.Count; i++)
+                if (LessonCatalog.All[i].Id == _selectedHomeLesson.Id) { index = i; break; }
+            Root.Q<Label>("home-level").text = "УРОВЕНЬ " + (index + 1);
+            Root.Q<Label>("home-selected-title").text = _selectedHomeLesson.Title;
+            Root.Q<Label>("home-selected-summary").text = _selectedHomeLesson.Summary;
+        }
+
+        private void RenderHomeLessonPath()
+        {
+            var container = Root.Q<VisualElement>("home-topic-list");
+            container.Clear();
+            for (var index = 0; index < LessonCatalog.All.Count; index++)
+            {
+                var lesson = LessonCatalog.All[index];
+                var captured = lesson;
+                var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
+                var button = new Button(() =>
+                {
+                    _selectedHomeLesson = captured;
+                    UpdateHomeLessonHeader();
+                    RenderHomeLessonPath();
+                });
+                button.AddToClassList("hub-level-node");
+                button.AddToClassList("hub-level-node-" + (index % 4));
+                if (done) button.AddToClassList("hub-level-node-done");
+                if (_selectedHomeLesson != null && _selectedHomeLesson.Id == lesson.Id)
+                    button.AddToClassList("hub-level-node-selected");
+                button.tooltip = (index + 1) + ". " + lesson.Title;
+                button.text = done ? "✓" : string.Empty;
+                container.Add(button);
+            }
         }
 
         private void RenderLessons()
@@ -667,8 +719,8 @@ namespace IVR.UI
         private void RenderEconomyCounters()
         {
             if (_dailyProgress == null) return;
-            Root.Q<Button>("top-streak").text = "🔥 " + _dailyProgress.currentStreak;
-            Root.Q<Button>("top-coins").text = "◉ " + _dailyProgress.coins;
+            Root.Q<Label>("top-streak-value").text = _dailyProgress.currentStreak.ToString();
+            Root.Q<Label>("top-coins-value").text = _dailyProgress.coins.ToString();
         }
 
         private void OpenStreakRewards()

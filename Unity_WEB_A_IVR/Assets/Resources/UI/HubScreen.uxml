@@ -9,8 +9,14 @@
                     <ui:Label text="Игра о финансах" class="hub-brand-text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="hub-top-actions">
-                    <ui:Button name="top-streak" text="🔥 —" class="hub-streak-pill hub-top-pill" />
-                    <ui:Button name="top-coins" text="◉ 0" class="hub-coin-pill hub-top-pill" />
+                    <ui:Button name="top-streak" class="hub-streak-pill hub-top-pill">
+                        <ui:VisualElement class="hub-counter-icon hub-fire-icon" />
+                        <ui:Label name="top-streak-value" text="—" class="hub-counter-value" />
+                    </ui:Button>
+                    <ui:Button name="top-coins" class="hub-coin-pill hub-top-pill">
+                        <ui:VisualElement class="hub-counter-icon hub-coin-icon" />
+                        <ui:Label name="top-coins-value" text="0" class="hub-counter-value" />
+                    </ui:Button>
                     <ui:Label name="top-score" text="0 очков" class="hub-score-pill" />
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -26,9 +32,9 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="hub-feature">
                         <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
-                        <ui:Label text="Твоя дорожка знаний" class="hub-feature-title" />
-                        <ui:Label text="Проходи темы и закрепляй их в квизе" class="hub-feature-copy" />
-                        <ui:Button name="home-start-quiz" text="Пройти квиз →" class="hub-feature-button" />
+                        <ui:Label name="home-selected-title" text="Накопления" class="hub-feature-title" />
+                        <ui:Label name="home-selected-summary" text="Как приблизиться к денежной цели" class="hub-feature-copy" />
+                        <ui:Button name="home-start-quiz" text="Открыть урок →" class="hub-feature-button" />
                     </ui:VisualElement>
                     <ui:VisualElement class="hub-stats-row">
                         <ui:VisualElement class="hub-stat">
@@ -41,8 +47,9 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:Button name="home-market" text="Виртуальная биржа →" class="hub-outline" />
-                    <ui:Label text="Темы для изучения" class="hub-section-title" />
-                    <ui:VisualElement name="home-topic-list" class="hub-list" />
+                    <ui:Label text="Дорожка уроков" class="hub-section-title" />
+                    <ui:Label text="Нажми на кружок, чтобы выбрать тему" class="hub-muted hub-path-help" />
+                    <ui:VisualElement name="home-topic-list" class="hub-level-path" />
                 </ui:VisualElement>
 
                 <ui:VisualElement name="tab-learn" class="hub-page">

@@ -905,3 +905,84 @@
     margin-top: 9px;
     margin-bottom: 0;
 }
+
+/* Главная дорожка уроков */
+.hub-top-pill {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.hub-counter-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.hub-fire-icon {
+    background-image: resource("UI/Icons/streak-fire");
+}
+
+.hub-coin-icon {
+    background-image: resource("UI/Icons/coin");
+}
+
+.hub-counter-value {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: rgb(48, 45, 47);
+    -unity-text-align: middle-center;
+}
+
+.hub-path-help {
+    margin-top: -7px;
+    margin-bottom: 8px;
+}
+
+.hub-level-path {
+    width: 100%;
+    min-height: 900px;
+    padding-top: 8px;
+    padding-bottom: 24px;
+}
+
+.hub-level-node {
+    width: 92px;
+    height: 92px;
+    min-width: 92px;
+    min-height: 92px;
+    margin-top: -3px;
+    padding: 0;
+    border-width: 0;
+    border-radius: 50px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("UI/Icons/lesson-node");
+    -unity-background-scale-mode: scale-to-fit;
+    color: white;
+    font-size: 28px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.hub-level-node-0 { align-self: center; margin-left: -34px; }
+.hub-level-node-1 { align-self: center; margin-left: 56px; }
+.hub-level-node-2 { align-self: center; margin-left: 18px; }
+.hub-level-node-3 { align-self: center; margin-left: -52px; }
+
+.hub-level-node:hover {
+    opacity: 0.88;
+}
+
+.hub-level-node-selected {
+    width: 104px;
+    height: 104px;
+    min-width: 104px;
+    min-height: 104px;
+    margin-top: -9px;
+    margin-bottom: -6px;
+}
+
+.hub-level-node-done {
+    color: rgb(255, 255, 255);
+}
