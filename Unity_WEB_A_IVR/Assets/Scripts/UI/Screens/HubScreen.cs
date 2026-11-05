@@ -53,14 +53,9 @@ namespace IVR.UI
             Root.Q<Button>("profile-interests-button").clicked += () => ScreenManager.Instance.ShowInterests();
             Root.Q<Button>("profile-logout").clicked += Logout;
 
-            foreach (var lesson in LessonCatalog.All)
-            {
-                var captured = lesson;
-                Root.Q<Button>("home-" + lesson.Key).clicked += () => OpenLesson(captured);
-                Root.Q<Button>("learn-" + lesson.Key).clicked += () => OpenLesson(captured);
-            }
-
             Root.Q<Button>("lesson-back").clicked += CloseLesson;
+            Root.Q<Button>("lesson-story-next").clicked += ShowLessonLearningStep;
+            Root.Q<Button>("lesson-learning-back").clicked += ShowLessonStoryStep;
             Root.Q<Button>("learning-refresh").clicked += () => _ = RefreshPersonalLessons();
             Root.Q<Button>("learning-diagnostic").clicked += () => GameManager.Instance.StartQuiz(QuizConfig.Diagnostic());
             Root.Q<Button>("lesson-quiz").clicked += () =>
@@ -190,18 +185,29 @@ namespace IVR.UI
             Root.Q<Label>("home-lessons").text = LessonCatalog.CompletedCount(_profile.id) + "/" + LessonCatalog.All.Count;
             if (_dailyProgress != null)
                 Root.Q<Label>("top-streak").text = "Серия " + _dailyProgress.currentStreak;
-            foreach (var lesson in LessonCatalog.All)
-                Root.Q<Button>("home-" + lesson.Key).text =
-                    (LessonCatalog.IsCompleted(_profile.id, lesson.Id) ? "✓  " : "○  ") + lesson.Title + "    →";
+            RenderTopicButtons("home-topic-list", "hub-path-item", true);
         }
 
         private void RenderLessons()
         {
-            foreach (var lesson in LessonCatalog.All)
+            RenderTopicButtons("lesson-topic-list", "hub-lesson-card", false);
+        }
+
+        private void RenderTopicButtons(string containerName, string className, bool compact)
+        {
+            var container = Root.Q<VisualElement>(containerName);
+            container.Clear();
+            for (var index = 0; index < LessonCatalog.All.Count; index++)
             {
+                var lesson = LessonCatalog.All[index];
                 var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
-                Root.Q<Button>("learn-" + lesson.Key).text =
-                    lesson.Title + (done ? "   ·   Пройдено ✓" : "   ·   Читать →");
+                var captured = lesson;
+                var button = new Button(() => OpenLesson(captured));
+                button.AddToClassList(className);
+                button.text = compact
+                    ? (done ? "✓  " : "○  ") + (index + 1).ToString("00") + "   " + lesson.Title + "    →"
+                    : lesson.Title + (done ? "   ·   Пройдено ✓" : "   ·   Читать →");
+                container.Add(button);
             }
         }
 
@@ -216,7 +222,11 @@ namespace IVR.UI
             Root.Q<VisualElement>("lesson-ai-content").style.display = DisplayStyle.None;
             Root.Q<Label>("lesson-title").text = lesson.Title;
             Root.Q<Label>("lesson-summary").text = lesson.Summary;
+            Root.Q<Label>("lesson-progress").text = "Материал темы";
             Root.Q<Label>("lesson-body").text = lesson.Body;
+            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.Flex;
         }
 
         private void CloseLesson()
@@ -299,7 +309,40 @@ namespace IVR.UI
                 : lesson.status == "PENDING" ? "Шпаргалка уже готова. Персональное объяснение дополняется — обнови список чуть позже."
                 : "Твой разбор · примерно 3 минуты";
             RenderPersonalLessonContent(lesson);
+            if (!string.IsNullOrWhiteSpace(lesson.story)) ShowLessonStoryStep();
+            else ShowFallbackLessonStep();
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void ShowLessonStoryStep()
+        {
+            Root.Q<VisualElement>("lesson-story-step").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-learning-step").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.Flex;
+            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.None;
+            Root.Q<Label>("lesson-progress").text = "Шаг 1 из 2 · История";
+            Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void ShowLessonLearningStep()
+        {
+            if (_selectedPersonalLesson == null || string.IsNullOrWhiteSpace(_selectedPersonalLesson.story)) return;
+            Root.Q<VisualElement>("lesson-story-step").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-learning-step").style.display = DisplayStyle.Flex;
+            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.Flex;
+            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.Flex;
+            Root.Q<Label>("lesson-progress").text = "Шаг 2 из 2 · Разбор";
+            Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void ShowFallbackLessonStep()
+        {
+            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.Flex;
+            Root.Q<Label>("lesson-progress").text = "Материал и шпаргалка";
         }
 
         private void RenderPersonalLessonContent(PersonalLessonDto lesson)

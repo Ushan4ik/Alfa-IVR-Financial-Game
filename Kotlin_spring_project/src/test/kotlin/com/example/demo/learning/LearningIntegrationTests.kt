@@ -50,14 +50,19 @@ class LearningIntegrationTests {
         return HttpClient.newHttpClient().send(b.build(), HttpResponse.BodyHandlers.ofString())
     }
 
-    @Test fun `diagnostic covers four topics without leaking answers and requires authentication`() {
+    @Test fun `diagnostic covers every topic without leaking answers and requires authentication`() {
         assertTrue(request("/learning/profile", null).statusCode() in listOf(401,403))
         val p = player()
         val response = request("/learning/attempts", p, "POST", "{\"diagnostic\":true}")
         assertEquals(200, response.statusCode())
         val data = json.readTree(response.body())
-        assertEquals(4, data.path("questions").size())
-        assertEquals(4, data.path("questions").map { it.path("topicId").asText() }.toSet().size)
+        assertEquals(11, LearningCatalog.topics.size)
+        assertTrue(LearningCatalog.topics.all { topic ->
+            LearningCatalog.questions.count { it.topicId == topic.id } >= 4
+        })
+        assertEquals(LearningCatalog.topics.size, data.path("questions").size())
+        assertEquals(LearningCatalog.topics.size,
+            data.path("questions").map { it.path("topicId").asText() }.toSet().size)
         assertFalse(response.body().contains("correctIndex"))
         assertFalse(response.body().contains("explanation"))
         assertEquals(409, request("/player/progress", p, "PUT", "{\"finLiteracyScore\":999999}").statusCode())
