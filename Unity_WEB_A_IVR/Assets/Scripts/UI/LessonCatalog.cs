@@ -10,14 +10,16 @@ namespace IVR.UI
         public string Title { get; }
         public string Summary { get; }
         public string Body { get; }
+        public string Story { get; }
 
-        public LessonDefinition(string key, string id, string title, string summary, string body)
+        public LessonDefinition(string key, string id, string title, string summary, string body, string story)
         {
             Key = key;
             Id = id;
             Title = title;
             Summary = summary;
             Body = body;
+            Story = story;
         }
     }
 
@@ -62,7 +64,38 @@ namespace IVR.UI
         };
 
         private static LessonDefinition L(string key, string id, string title, string summary, string body) =>
-            new LessonDefinition(key, id, title, summary, body);
+            new LessonDefinition(key, id, title, summary, body, StoryFor(id));
+
+        private static string StoryFor(string id)
+        {
+            switch (id)
+            {
+                case "lesson_savings":
+                    return "Мира хочет купить ноутбук для учёбы, но небольшие покупки постоянно отдаляют цель. Она записывает нужную сумму и срок, а затем решает откладывать часть денег сразу после каждого поступления.";
+                case "lesson_deposits":
+                    return "Максим выбирает место для накоплений. Один вклад обещает привлекательную ставку, но запрещает частичное снятие. Второй даёт больше свободы. Перед выбором Максим сравнивает все условия, а не одну цифру.";
+                case "lesson_insurance":
+                    return "Соня хочет защитить новый телефон. Она замечает, что один полис покрывает повреждение, но не потерю. Соня читает исключения и заранее узнаёт, какие документы потребуются при страховом случае.";
+                case "lesson_credits":
+                    return "Артём увидел игровую приставку с небольшим ежемесячным платежом. После подсчёта всех платежей оказалось, что итоговая сумма заметно выше цены. Артём проверяет, укладывается ли платёж в его бюджет.";
+                case "lesson_debit_card":
+                    return "Лера оплачивает покупку дебетовой картой. Перед подтверждением она сверяет сумму на терминале, а после оплаты проверяет остаток на связанном счёте.";
+                case "lesson_inflation":
+                    return "Год назад на 1000 рублей Никита покупал привычный набор продуктов. Теперь тот же набор стоит дороже. Никита замечает, что сумма не изменилась, но купить на неё можно меньше.";
+                case "lesson_compound_interest":
+                    return "Даша оставляет начисленные проценты на счёте. В следующем периоде доход рассчитывается уже от увеличенной суммы. Она видит, как время усиливает эффект капитализации.";
+                case "lesson_investments":
+                    return "Илья хочет вложить деньги, которые понадобятся ему через неделю. Сравнив срок и риск, он понимает: цена актива может снизиться именно тогда, когда деньги будут нужны.";
+                case "lesson_shares":
+                    return "Кира покупает учебную акцию компании, которая ей нравится. На следующий день цена снижается. Кира понимает, что симпатия к бренду не гарантирует рост цены или дивиденды.";
+                case "lesson_bonds":
+                    return "Олег сравнивает две облигации. Он проверяет дату возврата, купон и надёжность эмитента, потому что высокая заявленная доходность сама по себе не отменяет риск.";
+                case "lesson_diversification":
+                    return "Весь учебный портфель Ани состоит из одной акции. Когда её цена падает, снижается весь портфель. Аня решает распределить вложения между разными активами.";
+                default:
+                    return "Герой сталкивается с финансовым выбором, сравнивает варианты и проверяет условия до принятия решения.";
+            }
+        }
 
         public static bool IsCompleted(string playerId, string lessonId) =>
             PlayerPrefs.GetInt("ivr_lesson_" + playerId + "_" + lessonId, 0) == 1;

@@ -218,15 +218,22 @@ namespace IVR.UI
             _selectedPersonalLesson = null;
             Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;
             Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.Flex;
-            Root.Q<VisualElement>("lesson-fallback-card").style.display = DisplayStyle.Flex;
-            Root.Q<VisualElement>("lesson-ai-content").style.display = DisplayStyle.None;
             Root.Q<Label>("lesson-title").text = lesson.Title;
             Root.Q<Label>("lesson-summary").text = lesson.Summary;
-            Root.Q<Label>("lesson-progress").text = "Материал темы";
-            Root.Q<Label>("lesson-body").text = lesson.Body;
-            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
-            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.None;
-            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.Flex;
+            RenderCatalogLessonContent(lesson);
+            ShowLessonStoryStep();
+        }
+
+        private void RenderCatalogLessonContent(LessonDefinition lesson)
+        {
+            Root.Q<VisualElement>("lesson-fallback-card").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-ai-content").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-character-card").style.display = DisplayStyle.None;
+            Root.Q<Label>("lesson-story").text = lesson.Story;
+            Root.Q<Label>("lesson-takeaway").text = lesson.Body;
+            Root.Q<Label>("lesson-cheatsheet").text = "• " + lesson.Summary;
+            Root.Q<VisualElement>("lesson-terms-group").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-terms-list").Clear();
         }
 
         private void CloseLesson()
@@ -327,7 +334,10 @@ namespace IVR.UI
 
         private void ShowLessonLearningStep()
         {
-            if (_selectedPersonalLesson == null || string.IsNullOrWhiteSpace(_selectedPersonalLesson.story)) return;
+            var hasPersonalStory = _selectedPersonalLesson != null &&
+                !string.IsNullOrWhiteSpace(_selectedPersonalLesson.story);
+            var hasCatalogStory = _selectedLesson != null && !string.IsNullOrWhiteSpace(_selectedLesson.Story);
+            if (!hasPersonalStory && !hasCatalogStory) return;
             Root.Q<VisualElement>("lesson-story-step").style.display = DisplayStyle.None;
             Root.Q<VisualElement>("lesson-learning-step").style.display = DisplayStyle.Flex;
             Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
