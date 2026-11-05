@@ -3,7 +3,7 @@
 - [Окончательная заявка](final_application.md)
 - [Итоговые пользовательские сценарии](final_scripts.md)
 - [Изменения проекта](changes.md)
-- [Итоговый отчёт](docs/final/Итоговый_отчет_Ильин.docx)
+- [Итоговый отчёт](docs/final/Итоговый_отчет_Ильин_финальный.docx)
 - [Подписанное техническое задание](docs/final/customer_signed_technical_assignment.pdf)
 - [Ссылка, указанная для материалов в системе 2359](https://2359.hse.ru/igws/20582/edit)
 
