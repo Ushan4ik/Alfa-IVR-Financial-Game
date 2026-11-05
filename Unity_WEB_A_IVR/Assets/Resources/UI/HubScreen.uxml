@@ -69,8 +69,33 @@
                         <ui:Button name="lesson-back" text="‹  Все темы" class="hub-text-button" />
                         <ui:Label name="lesson-title" text="" class="hub-title" />
                         <ui:Label name="lesson-summary" text="" class="hub-subtitle" />
-                        <ui:VisualElement class="hub-reading-card">
+                        <ui:VisualElement name="lesson-fallback-card" class="hub-reading-card">
                             <ui:Label name="lesson-body" text="" class="hub-reading-text" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="lesson-ai-content" class="hub-story-content" style="display: none;">
+                            <ui:VisualElement name="lesson-character-card" class="hub-character-card">
+                                <ui:Label name="lesson-character-avatar" text="М" class="hub-story-avatar" />
+                                <ui:VisualElement class="hub-story-character-copy">
+                                    <ui:Label name="lesson-character-name" text="Мира, 17 лет" class="hub-story-character-name" />
+                                    <ui:Label name="lesson-character-personality" text="внимательная" class="hub-muted" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="hub-reading-card hub-story-card">
+                                <ui:Label text="ТВОЯ ИСТОРИЯ" class="hub-story-eyebrow" />
+                                <ui:Label name="lesson-story" text="" class="hub-reading-text hub-story-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="hub-takeaway-card">
+                                <ui:Label text="Что важно запомнить" class="hub-story-section-title" />
+                                <ui:Label name="lesson-takeaway" text="" class="hub-reading-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="lesson-terms-group">
+                                <ui:Label text="Новые термины" class="hub-story-section-title" />
+                                <ui:VisualElement name="lesson-terms-list" class="hub-list" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="hub-cheatsheet-card">
+                                <ui:Label text="Шпаргалка" class="hub-story-section-title" />
+                                <ui:Label name="lesson-cheatsheet" text="" class="hub-reading-text" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:Button name="lesson-quiz" text="Проверить знания →" class="hub-primary" />
                     </ui:VisualElement>

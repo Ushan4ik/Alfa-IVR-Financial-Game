@@ -22,6 +22,8 @@ namespace IVR.UI
         private PersonalLessonDto _selectedPersonalLesson;
         private int _learningRequestVersion;
         private string _pendingPersonalLessonId;
+        private bool _hasPendingLessons;
+        private bool _learningRefreshInFlight;
         private HubTab _activeTab;
         private int _questFilter; // 0 — все, 1 — в процессе, 2 — готово
         private int _officeClicks;
@@ -75,6 +77,11 @@ namespace IVR.UI
             Root.Q<Button>("rating-refresh").clicked += () => _ = RefreshRating();
             Root.Q<Button>("hub-result-close").clicked += CloseResult;
             Root.Q<Button>("office-clicker-button").clicked += OnOfficeClick;
+            Root.schedule.Execute(() =>
+            {
+                if (_hasPendingLessons && !_learningRefreshInFlight && _activeTab == HubTab.Learn &&
+                    IvrApi.Auth.IsLoggedIn) _ = RefreshPersonalLessons();
+            }).Every(3000);
             RenderMiniGames();
         }
 
@@ -202,8 +209,11 @@ namespace IVR.UI
         {
             Navigate(HubTab.Learn);
             _selectedLesson = lesson;
+            _selectedPersonalLesson = null;
             Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;
             Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-fallback-card").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-ai-content").style.display = DisplayStyle.None;
             Root.Q<Label>("lesson-title").text = lesson.Title;
             Root.Q<Label>("lesson-summary").text = lesson.Summary;
             Root.Q<Label>("lesson-body").text = lesson.Body;
@@ -219,6 +229,8 @@ namespace IVR.UI
 
         private async Task RefreshPersonalLessons()
         {
+            if (_learningRefreshInFlight) return;
+            _learningRefreshInFlight = true;
             int version = ++_learningRequestVersion;
             var status = Root.Q<Label>("learning-status");
             var list = Root.Q<VisualElement>("personal-lesson-list");
@@ -232,6 +244,7 @@ namespace IVR.UI
                 if (version != _learningRequestVersion || !IvrApi.Auth.IsLoggedIn) return;
                 var result = lessonsTask.Result;
                 if (!result.Success) { status.text = "Нет связи. Нажми «Обновить», чтобы загрузить разборы."; return; }
+                _hasPendingLessons = result.Data.Exists(item => item.status == "PENDING");
                 status.text = result.Data.Count == 0 ? "Пройди квиз — здесь появится твой разбор и шпаргалка." : "";
                 var knowledge = profileTask.Result;
                 if (knowledge.Success)
@@ -246,7 +259,8 @@ namespace IVR.UI
                 {
                     var captured = lesson;
                     var button = new Button(() => OpenPersonalLesson(captured)) {
-                        text = lesson.title + (lesson.completed ? " · Закреплено ✓" : " · Читать →")
+                        text = lesson.title + (lesson.completed ? " · Закреплено ✓"
+                            : lesson.status == "PENDING" ? " · Создаём историю…" : " · Читать →")
                     };
                     button.enableRichText = false;
                     button.AddToClassList("hub-lesson-card");
@@ -257,11 +271,18 @@ namespace IVR.UI
                         _pendingPersonalLessonId = null;
                         OpenPersonalLesson(lesson);
                     }
+                    else if (_selectedPersonalLesson != null && lesson.id == _selectedPersonalLesson.id &&
+                        lesson.status != _selectedPersonalLesson.status)
+                        OpenPersonalLesson(lesson);
                 }
             }
             catch (Exception)
             {
                 if (version == _learningRequestVersion) status.text = "Не удалось загрузить уроки. Нажми «Обновить».";
+            }
+            finally
+            {
+                _learningRefreshInFlight = false;
             }
         }
 
@@ -277,9 +298,61 @@ namespace IVR.UI
             Root.Q<Label>("lesson-summary").text = lesson.completed ? "Ты закрепил тему. Можно повторить без повторной награды."
                 : lesson.status == "PENDING" ? "Шпаргалка уже готова. Персональное объяснение дополняется — обнови список чуть позже."
                 : "Твой разбор · примерно 3 минуты";
-            Root.Q<Label>("lesson-body").text = lesson.explanation + "\n\nПример\n" + lesson.example
-                + "\n\nЗапомни\n• " + string.Join("\n• ", lesson.cheatSheet);
+            RenderPersonalLessonContent(lesson);
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void RenderPersonalLessonContent(PersonalLessonDto lesson)
+        {
+            var hasStory = !string.IsNullOrWhiteSpace(lesson.story);
+            Root.Q<VisualElement>("lesson-ai-content").style.display = hasStory ? DisplayStyle.Flex : DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-fallback-card").style.display = hasStory ? DisplayStyle.None : DisplayStyle.Flex;
+            if (!hasStory)
+            {
+                var rules = lesson.cheatSheet == null || lesson.cheatSheet.Count == 0
+                    ? "Проверь основное правило темы" : string.Join("\n• ", lesson.cheatSheet);
+                Root.Q<Label>("lesson-body").text = lesson.explanation + "\n\nПример\n" + lesson.example
+                    + "\n\nЗапомни\n• " + rules;
+                return;
+            }
+
+            var character = lesson.character;
+            var characterCard = Root.Q<VisualElement>("lesson-character-card");
+            characterCard.style.display = character == null || string.IsNullOrWhiteSpace(character.name)
+                ? DisplayStyle.None : DisplayStyle.Flex;
+            if (character != null)
+            {
+                Root.Q<Label>("lesson-character-name").text = character.name + ", " + character.age + " лет";
+                Root.Q<Label>("lesson-character-personality").text = character.personality;
+                Root.Q<Label>("lesson-character-avatar").text = string.IsNullOrEmpty(character.name)
+                    ? "А" : character.name.Substring(0, 1).ToUpperInvariant();
+            }
+            Root.Q<Label>("lesson-story").text = lesson.story;
+            Root.Q<Label>("lesson-takeaway").text = lesson.takeaway;
+            Root.Q<Label>("lesson-cheatsheet").text = lesson.cheatSheet == null
+                ? "" : "• " + string.Join("\n• ", lesson.cheatSheet);
+
+            var termsGroup = Root.Q<VisualElement>("lesson-terms-group");
+            var termsList = Root.Q<VisualElement>("lesson-terms-list");
+            termsList.Clear();
+            termsGroup.style.display = lesson.terms == null || lesson.terms.Count == 0
+                ? DisplayStyle.None : DisplayStyle.Flex;
+            if (lesson.terms == null) return;
+            foreach (var term in lesson.terms)
+            {
+                var card = new VisualElement();
+                card.AddToClassList("hub-term-card");
+                var name = new Label(term.term ?? "Термин");
+                name.AddToClassList("hub-term-name");
+                name.enableRichText = false;
+                var text = new Label(!string.IsNullOrWhiteSpace(term.text) ? term.text
+                    : (term.definition ?? "") + (string.IsNullOrWhiteSpace(term.example) ? "" : " " + term.example));
+                text.AddToClassList("hub-term-text");
+                text.enableRichText = false;
+                card.Add(name);
+                card.Add(text);
+                termsList.Add(card);
+            }
         }
 
         private void SetQuestFilter(int filter)
