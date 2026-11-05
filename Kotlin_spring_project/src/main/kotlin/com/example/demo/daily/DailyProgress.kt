@@ -36,6 +36,7 @@ data class StreakRewardClaim(
 
 interface StreakRewardClaimRepository : JpaRepository<StreakRewardClaim, String> {
     fun findByPlayerId(playerId: String): List<StreakRewardClaim>
+    fun deleteByPlayerId(playerId: String)
 }
 
 data class DailyQuestResponse(

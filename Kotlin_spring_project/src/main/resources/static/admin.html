@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>IVR Admin — Вопросы</title>
+    <title>IVR Admin</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: system-ui, sans-serif; background: #0f0f1a; color: #fff; padding: 32px; }
@@ -30,13 +30,14 @@
         }
         button:hover { background: #9080ff; }
         button.secondary { background: transparent; border: 1px solid #7864ff; color: #7864ff; }
+        button.danger { background: transparent; border: 1px solid #f06060; color: #f06060; }
 
         .status { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: none; }
         .status.ok  { background: #1a3a2a; color: #4caf80; display: block; }
         .status.err { background: #3a1a1a; color: #f06060; display: block; }
 
         #login-section { max-width: 400px; }
-        #main-section { display: none; max-width: 700px; }
+        #main-section { display: none; max-width: 1180px; }
 
         .question-list { list-style: none; }
         .question-list li {
@@ -77,6 +78,18 @@
         .save-btn { margin-top: 12px; width: auto; padding: 8px 20px; font-size: 13px; }
         .stat-badge { color: #b0b0d0; }
         .stat-highlight { color: #fff; font-weight: bold; }
+        .account-meta { margin: 12px 0; padding: 10px; border-radius: 8px; background: #19192b; color: #aaa; font-size: 12px; line-height: 1.6; }
+        .action-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-top: 14px; }
+        .action-row > div { flex: 1; min-width: 160px; }
+        .action-row button { width: auto; margin-top: 0; padding: 10px 14px; font-size: 13px; }
+        @media (max-width: 800px) {
+            body { padding: 14px; }
+            .edit-grid { grid-template-columns: 1fr; }
+            .player-row-head { flex-wrap: wrap; }
+            .player-col-email { flex-basis: 60%; }
+            .player-col-stat { width: auto; }
+            .player-edit-panel { padding-left: 14px; }
+        }
     </style>
 </head>
 <body>
@@ -84,7 +97,7 @@
 <!-- Логин -->
 <div id="login-section">
     <h1>IVR Admin</h1>
-    <p class="subtitle">Управление вопросами</p>
+    <p class="subtitle">Управление аккаунтами, прогрессом, рынком и вопросами</p>
     <div class="card">
         <h2>Войти</h2>
         <label>Email</label>
@@ -196,7 +209,7 @@
 </div>
 
 <script>
-    const API = 'http://localhost:8080';
+    const API = location.origin;
     let token = localStorage.getItem('ivr_token') || '';
 
     if (token) showMain();
@@ -246,13 +259,15 @@
         const medals = ['🥇','🥈','🥉'];
         document.getElementById('player-list').innerHTML = players.map((p, i) => {
             const rank = medals[i] || (i + 1);
+            const rewards = p.claimedStreakRewards.length ? p.claimedStreakRewards.join(', ') + ' дней' : 'нет';
             return `
             <div class="player-row" id="pr-${p.id}">
                 <div class="player-row-head" onclick="toggleEdit('${p.id}')">
                     <span class="player-col-rank">${rank}</span>
                     <span class="player-col-name">${escHtml(p.nickname)}</span>
                     <span class="player-col-email">${escHtml(p.email)}</span>
-                    <span class="player-col-stat stat-badge">Ур. <b>${p.level}</b> · ${p.finLiteracyScore} оч.</span>
+                    <span class="player-col-stat stat-badge">${p.role}</span>
+                    <span class="player-col-stat stat-badge">🔥 ${p.currentStreak} · 🪙 ${p.coins}</span>
                     <span class="player-col-stat stat-badge">💵 ${Math.round(p.cash).toLocaleString()} ₸</span>
                     <span class="player-col-stat stat-highlight">📈 ${Math.round(p.totalValue).toLocaleString()} ₸</span>
                     <span class="player-col-edit"><button class="edit-inline-btn">Ред.</button></span>
@@ -260,12 +275,31 @@
                 <div class="player-edit-panel" id="ep-${p.id}">
                     <div class="edit-grid">
                         <div>
+                            <label>Email</label>
+                            <input id="ee-${p.id}" type="email" value="${escHtml(p.email)}" />
+                        </div>
+                        <div>
                             <label>Никнейм</label>
                             <input id="en-${p.id}" value="${escHtml(p.nickname)}" />
                         </div>
                         <div>
+                            <label>Роль</label>
+                            <select id="er-${p.id}">
+                                <option value="PLAYER" ${p.role === 'PLAYER' ? 'selected' : ''}>PLAYER</option>
+                                <option value="ADMIN" ${p.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Интересы через запятую</label>
+                            <input id="ei-${p.id}" value="${escHtml(p.interests.join(', '))}" />
+                        </div>
+                        <div>
                             <label>Наличные (₸)</label>
                             <input id="ec-${p.id}" type="number" value="${p.cash}" />
+                        </div>
+                        <div>
+                            <label>Коины</label>
+                            <input id="ecoins-${p.id}" type="number" min="0" value="${p.coins}" />
                         </div>
                         <div>
                             <label>Уровень</label>
@@ -275,9 +309,42 @@
                             <label>Очки финграмотности</label>
                             <input id="es-${p.id}" type="number" value="${p.finLiteracyScore}" min="0" />
                         </div>
+                        <div>
+                            <label>Дата последней активности</label>
+                            <input id="edate-${p.id}" type="date" value="${p.activityDate || ''}" />
+                        </div>
+                        <div>
+                            <label>Текущая серия</label>
+                            <input id="estreak-${p.id}" type="number" min="0" value="${p.currentStreak}" />
+                        </div>
+                        <div>
+                            <label>Лучшая серия</label>
+                            <input id="ebest-${p.id}" type="number" min="0" value="${p.bestStreak}" />
+                        </div>
+                        <div>
+                            <label>Тестов сегодня</label>
+                            <input id="etests-${p.id}" type="number" min="0" value="${p.testsCompleted}" />
+                        </div>
+                        <div>
+                            <label>Мини-игр сегодня</label>
+                            <input id="egames-${p.id}" type="number" min="0" value="${p.miniGamesPlayed}" />
+                        </div>
+                    </div>
+                    <div class="account-meta">
+                        ID: ${escHtml(p.id)}<br>
+                        Создан: ${new Date(p.createdAt).toLocaleString()} · попыток: ${p.attemptsCount} · уроков: ${p.lessonsCount} · позиций на бирже: ${p.holdingsCount}<br>
+                        Полученные награды за серию: ${escHtml(rewards)}. Пароль не отображается: в базе хранится только защищённый хеш.
                     </div>
                     <button class="save-btn" onclick="savePlayer('${p.id}')">Сохранить</button>
                     <span id="ps-${p.id}" style="margin-left:12px; font-size:13px; color:#4caf80;"></span>
+                    <div class="action-row">
+                        <div>
+                            <label>Добавить дней к серии</label>
+                            <input id="eadvance-${p.id}" type="number" min="1" max="365" value="1" />
+                        </div>
+                        <button class="secondary" onclick="advanceStreak('${p.id}')">Пропустить дни</button>
+                        <button class="danger" onclick="resetStreakRewards('${p.id}')">Сбросить полученные награды</button>
+                    </div>
                 </div>
             </div>`;
         }).join('');
@@ -290,10 +357,19 @@
 
     async function savePlayer(id) {
         const body = {
+            email:    document.getElementById('ee-' + id).value,
             nickname: document.getElementById('en-' + id).value,
+            role:     document.getElementById('er-' + id).value,
+            interests: document.getElementById('ei-' + id).value.split(',').map(x => x.trim()).filter(Boolean),
             cash:     parseFloat(document.getElementById('ec-' + id).value),
+            coins:    parseInt(document.getElementById('ecoins-' + id).value),
             level:    parseInt(document.getElementById('el-' + id).value),
-            finLiteracyScore: parseInt(document.getElementById('es-' + id).value)
+            finLiteracyScore: parseInt(document.getElementById('es-' + id).value),
+            activityDate: document.getElementById('edate-' + id).value || null,
+            currentStreak: parseInt(document.getElementById('estreak-' + id).value),
+            bestStreak: parseInt(document.getElementById('ebest-' + id).value),
+            testsCompleted: parseInt(document.getElementById('etests-' + id).value),
+            miniGamesPlayed: parseInt(document.getElementById('egames-' + id).value)
         };
         const res = await fetch(`${API}/admin/players/${id}`, {
             method: 'PUT',
@@ -311,7 +387,37 @@
             setTimeout(() => { renderPlayers(allPlayers); }, 800);
         } else {
             msgEl.style.color = '#f06060';
-            msgEl.textContent = 'Ошибка ' + res.status;
+            msgEl.textContent = await responseError(res);
+        }
+    }
+
+    async function advanceStreak(id) {
+        const days = parseInt(document.getElementById('eadvance-' + id).value);
+        const res = await fetch(`${API}/admin/players/${id}/streak/advance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ days })
+        });
+        if (!res.ok) { status('players-status', await responseError(res), false); return; }
+        status('players-status', `К серии добавлено ${days} дн.`, true);
+        await loadPlayers();
+    }
+
+    async function resetStreakRewards(id) {
+        const res = await fetch(`${API}/admin/players/${id}/streak/rewards`, {
+            method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) { status('players-status', await responseError(res), false); return; }
+        status('players-status', 'Полученные награды серии сброшены', true);
+        await loadPlayers();
+    }
+
+    async function responseError(res) {
+        try {
+            const body = await res.json();
+            return body.detail || body.message || `Ошибка ${res.status}`;
+        } catch (_) {
+            return `Ошибка ${res.status}`;
         }
     }
 
