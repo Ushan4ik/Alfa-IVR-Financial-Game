@@ -1026,3 +1026,34 @@
     margin-top: 0;
     margin-bottom: 16px;
 }
+
+/* Компактная карточка выбранного уровня на главной. */
+.hub-home-feature {
+    padding: 10px 12px;
+    border-bottom-width: 3px;
+    border-radius: 10px;
+    margin-top: 4px;
+    margin-bottom: 7px;
+}
+
+.hub-home-feature .hub-feature-eyebrow {
+    font-size: 9px;
+    margin-bottom: 3px;
+}
+
+.hub-home-feature .hub-feature-title {
+    font-size: 16px;
+    margin-bottom: 3px;
+}
+
+.hub-home-feature .hub-feature-copy {
+    font-size: 11px;
+}
+
+.hub-home-feature .hub-feature-button {
+    height: 29px;
+    margin-top: 7px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 11px;
+}
