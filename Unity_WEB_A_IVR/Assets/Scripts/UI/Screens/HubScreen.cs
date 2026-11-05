@@ -348,12 +348,36 @@ namespace IVR.UI
             Root.Q<Label>("lesson-body").enableRichText = false;
             Root.Q<Label>("lesson-title").text = lesson.title;
             Root.Q<Label>("lesson-summary").text = lesson.completed ? "Ты закрепил тему. Можно повторить без повторной награды."
-                : lesson.status == "PENDING" ? "Шпаргалка уже готова. Персональное объяснение дополняется — обнови список чуть позже."
+                : lesson.status == "PENDING" ? "История загружается. Экран обновится автоматически."
                 : "Твой разбор · примерно 3 минуты";
-            RenderPersonalLessonContent(lesson);
-            if (!string.IsNullOrWhiteSpace(lesson.story)) ShowLessonStoryStep();
-            else ShowFallbackLessonStep();
+            if (lesson.status == "PENDING") ShowPendingLessonStep();
+            else if (!string.IsNullOrWhiteSpace(lesson.story))
+            {
+                RenderPersonalLessonContent(lesson);
+                ShowLessonStoryStep();
+            }
+            else
+            {
+                RenderPersonalLessonContent(lesson);
+                ShowFallbackLessonStep();
+            }
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
+        }
+
+        private void ShowPendingLessonStep()
+        {
+            Root.Q<VisualElement>("lesson-fallback-card").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-ai-content").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-character-card").style.display = DisplayStyle.None;
+            Root.Q<VisualElement>("lesson-story-step").style.display = DisplayStyle.Flex;
+            Root.Q<VisualElement>("lesson-learning-step").style.display = DisplayStyle.None;
+            Root.Q<Label>("lesson-story").text =
+                "⏳ Создаём персональную историю по твоим интересам и ошибкам в тесте.\n\n" +
+                "Обычно это занимает 10–30 секунд. Оставь этот экран открытым — готовая история появится автоматически.";
+            Root.Q<Button>("lesson-story-next").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-learning-back").style.display = DisplayStyle.None;
+            Root.Q<Button>("lesson-quiz").style.display = DisplayStyle.None;
+            Root.Q<Label>("lesson-progress").text = "Создаём историю…";
         }
 
         private void ShowLessonStoryStep()
