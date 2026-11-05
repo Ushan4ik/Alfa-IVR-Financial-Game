@@ -8,6 +8,116 @@
     background-color: rgb(18, 18, 30);
 }
 
+/* Пятишаговое приветствие, которое можно повторно открыть из профиля. */
+.welcome-tour {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    padding: 34px 28px 24px 28px;
+    background-color: rgb(249, 247, 248);
+}
+
+.welcome-tour-header {
+    width: 100%;
+}
+
+.welcome-tour-kicker {
+    color: rgb(242, 0, 48);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.welcome-tour-step {
+    color: rgb(115, 110, 116);
+    font-size: 12px;
+    margin-bottom: 9px;
+}
+
+.welcome-tour-progress {
+    width: 100%;
+    height: 4px;
+    border-radius: 3px;
+    background-color: rgb(218, 214, 218);
+}
+
+.welcome-tour-progress-fill {
+    width: 20%;
+    height: 4px;
+    border-radius: 3px;
+    background-color: rgb(242, 0, 48);
+}
+
+.welcome-tour-body {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.welcome-tour-art {
+    height: 300px;
+    margin-bottom: 38px;
+    border-radius: 28px;
+    background-color: rgb(255, 232, 236);
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-tour-symbol {
+    width: 162px;
+    height: 162px;
+    border-radius: 82px;
+    border-width: 7px;
+    border-color: rgb(255, 157, 174);
+    background-color: rgb(242, 0, 48);
+    color: white;
+    font-size: 70px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.welcome-tour-title {
+    color: rgb(14, 14, 16);
+    font-size: 35px;
+    -unity-font-style: bold;
+    white-space: normal;
+    margin-bottom: 18px;
+}
+
+.welcome-tour-copy {
+    color: rgb(104, 100, 106);
+    font-size: 17px;
+    white-space: normal;
+}
+
+.welcome-tour-footer {
+    flex-direction: row;
+    padding-top: 22px;
+}
+
+.welcome-tour-back,
+.welcome-tour-next {
+    height: 54px;
+    border-radius: 8px;
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+.welcome-tour-back {
+    width: 31%;
+    margin-right: 12px;
+    border-width: 1px;
+    border-color: rgb(242, 0, 48);
+    background-color: transparent;
+    color: rgb(210, 0, 42);
+}
+
+.welcome-tour-next {
+    flex-grow: 1;
+    border-width: 0;
+    background-color: rgb(242, 0, 48);
+    color: white;
+}
+
 .card {
     width: 420px;
     background-color: rgb(30, 30, 46);
@@ -182,114 +292,180 @@
     -unity-text-align: middle-center;
 }
 
+.welcome-screen {
+    background-color: rgb(239, 239, 240);
+}
+
+.welcome-shell {
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-top: 26px;
+    padding-bottom: 18px;
+}
+
+.welcome-header {
+    height: 62px;
+}
+
+.welcome-brand-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    margin-right: 18px;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-brand-letter {
+    height: 29px;
+    color: white;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.welcome-brand-line {
+    width: 22px;
+    height: 4px;
+    background-color: white;
+}
+
+.welcome-brand-name {
+    color: rgb(14, 14, 16);
+    font-size: 19px;
+}
+
 .welcome-hero {
     flex-grow: 1;
     justify-content: center;
-    padding-top: 14px;
+    padding-top: 5px;
 }
 
 .welcome-art {
-    height: 242px;
-    margin-bottom: 18px;
+    height: 264px;
+    margin-bottom: 3px;
     position: relative;
     align-items: center;
     justify-content: center;
 }
 
 .welcome-card {
-    width: 136px;
-    height: 188px;
-    margin-right: 40px;
-    border-radius: 16px;
-    background-color: rgb(239, 24, 44);
-    padding: 16px;
-    justify-content: space-between;
-    border-bottom-width: 8px;
-    border-bottom-color: rgb(196, 0, 31);
+    width: 151px;
+    height: 200px;
+    margin-left: 25px;
+    border-radius: 17px;
+    background-color: rgb(244, 24, 37);
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    border-bottom-width: 7px;
+    border-bottom-color: rgb(194, 0, 26);
+    rotate: 10deg;
+}
+
+.welcome-card-mark {
+    align-items: center;
 }
 
 .welcome-card-logo {
+    height: 57px;
     color: white;
-    font-size: 44px;
+    font-size: 54px;
     -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
-.welcome-card-caption {
-    color: white;
-    font-size: 10px;
+.welcome-card-line {
+    width: 43px;
+    height: 7px;
+    background-color: white;
+}
+
+.welcome-cashback {
+    position: absolute;
+    right: -24px;
+    bottom: 20px;
+    height: 31px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    background-color: rgb(95, 255, 0);
+    color: rgb(10, 10, 10);
+    font-size: 17px;
     -unity-font-style: bold;
-    white-space: normal;
+    -unity-text-align: middle-center;
+    rotate: -7deg;
 }
 
 .welcome-coin {
     position: absolute;
     right: 28px;
-    top: 76px;
-    width: 94px;
-    height: 94px;
+    top: 67px;
+    width: 100px;
+    height: 100px;
     border-radius: 50px;
-    border-width: 9px;
-    border-color: rgb(245, 190, 75);
-    background-color: rgb(224, 150, 46);
+    border-width: 8px;
+    border-color: rgb(105, 137, 167);
+    background-color: rgb(160, 184, 202);
     align-items: center;
     justify-content: center;
+    rotate: 8deg;
 }
 
 .welcome-coin-text {
-    color: white;
-    font-size: 44px;
+    color: rgb(236, 244, 248);
+    font-size: 49px;
     -unity-font-style: bold;
-}
-
-.welcome-reward {
-    position: absolute;
-    right: 8px;
-    bottom: 9px;
-    background-color: rgb(217, 255, 205);
-    border-radius: 9px;
-    padding-left: 11px;
-    padding-right: 11px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    align-items: center;
-}
-
-.welcome-reward-number {
-    color: rgb(23, 148, 24);
-    font-size: 16px;
-    -unity-font-style: bold;
-}
-
-.welcome-reward-caption {
-    color: rgb(38, 83, 31);
-    font-size: 9px;
 }
 
 .welcome-spark {
     position: absolute;
-    width: 17px;
-    height: 17px;
-    border-radius: 4px;
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+    rotate: 45deg;
 }
 
-.welcome-spark-left {
-    left: 31px;
-    top: 48px;
-    background-color: rgb(114, 223, 72);
+.welcome-spark-green {
+    left: 49px;
+    top: 72px;
+    width: 38px;
+    height: 38px;
+    background-color: rgb(100, 230, 73);
 }
 
-.welcome-spark-right {
-    right: 32px;
-    top: 21px;
-    background-color: rgb(112, 183, 255);
+.welcome-spark-red {
+    left: 46px;
+    top: 164px;
+    background-color: rgb(242, 51, 46);
+}
+
+.welcome-spark-blue {
+    left: 92px;
+    top: 179px;
+    width: 19px;
+    height: 19px;
+    background-color: rgb(76, 119, 250);
 }
 
 .welcome-title {
-    color: rgb(28, 28, 31);
-    font-size: 38px;
-    -unity-font-style: bold;
-    white-space: normal;
     margin-bottom: 13px;
+}
+
+.welcome-title-line {
+    height: 42px;
+    color: rgb(8, 8, 9);
+    font-size: 39px;
+    -unity-font-style: bold;
+}
+
+.welcome-title-accent {
+    color: rgb(242, 0, 48);
+}
+
+.welcome-copy {
+    color: rgb(132, 132, 136);
+    font-size: 16px;
 }
 
 .entry-copy {
@@ -299,33 +475,56 @@
 }
 
 .welcome-footer {
-    padding-top: 18px;
+    padding-top: 16px;
 }
 
 .welcome-benefits {
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
 }
 
 .welcome-benefit {
     width: 31%;
-    height: 73px;
-    border-radius: 9px;
-    background-color: rgb(21, 21, 22);
-    justify-content: center;
-    padding-left: 13px;
+    height: 106px;
+    border-radius: 14px;
+    background-color: rgb(5, 5, 6);
+    justify-content: flex-end;
+    padding-left: 12px;
+    padding-bottom: 10px;
+}
+
+.welcome-benefit-icon {
+    width: 48px;
+    height: 40px;
+    margin-bottom: 1px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.welcome-gamepad-icon {
+    background-image: resource("UI/Icons/welcome-gamepad");
+}
+
+.welcome-coin-icon {
+    background-image: resource("UI/Icons/coin");
+}
+
+.welcome-benefit-emoji {
+    height: 42px;
+    font-size: 34px;
+    -unity-text-align: middle-left;
 }
 
 .welcome-benefit-number {
-    color: rgb(120, 245, 73);
-    font-size: 21px;
+    height: 30px;
+    color: rgb(98, 255, 0);
+    font-size: 29px;
     -unity-font-style: bold;
 }
 
 .welcome-benefit-caption {
-    color: white;
-    font-size: 11px;
+    color: rgb(150, 150, 153);
+    font-size: 12px;
 }
 
 .entry-primary {

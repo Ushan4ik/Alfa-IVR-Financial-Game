@@ -1,52 +1,83 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="project://database/Assets/UI/Styles/IVR.uss?fileID=7433441132597879392&amp;guid=25b4ab05848a26796a2f91450bb3cddd&amp;type=3" />
-    <ui:VisualElement name="WelcomeScreen" class="entry-screen">
-        <ui:ScrollView class="entry-scroll">
-            <ui:VisualElement class="entry-shell">
-                <ui:VisualElement class="entry-header">
+    <ui:VisualElement name="WelcomeScreen" class="entry-screen welcome-screen">
+        <ui:ScrollView name="welcome-entry" class="entry-scroll">
+            <ui:VisualElement class="entry-shell welcome-shell">
+                <ui:VisualElement class="entry-header welcome-header">
                     <ui:VisualElement class="entry-brand">
-                        <ui:Label text="A" class="entry-logo" />
-                        <ui:Label text="Игра о банковских продуктах" class="entry-brand-name" />
+                        <ui:VisualElement class="entry-logo welcome-brand-logo">
+                            <ui:Label text="A" class="welcome-brand-letter" />
+                            <ui:VisualElement class="welcome-brand-line" />
+                        </ui:VisualElement>
+                        <ui:Label text="Игра о банковских&#10;продуктах" class="entry-brand-name welcome-brand-name" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="welcome-hero">
                     <ui:VisualElement class="welcome-art">
-                        <ui:VisualElement class="welcome-spark welcome-spark-left" />
-                        <ui:VisualElement class="welcome-spark welcome-spark-right" />
-                        <ui:VisualElement class="welcome-card">
-                            <ui:Label text="A" class="welcome-card-logo" />
-                            <ui:Label text="БАНКОВСКАЯ ИГРА" class="welcome-card-caption" />
-                        </ui:VisualElement>
+                        <ui:VisualElement class="welcome-spark welcome-spark-green" />
+                        <ui:VisualElement class="welcome-spark welcome-spark-red" />
+                        <ui:VisualElement class="welcome-spark welcome-spark-blue" />
                         <ui:VisualElement class="welcome-coin">
-                            <ui:Label text="₸" class="welcome-coin-text" />
+                            <ui:Label text="₽" class="welcome-coin-text" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="welcome-reward">
-                            <ui:Label text="+10" class="welcome-reward-number" />
-                            <ui:Label text="очков за ответ" class="welcome-reward-caption" />
+                        <ui:VisualElement class="welcome-card">
+                            <ui:VisualElement class="welcome-card-mark">
+                                <ui:Label text="A" class="welcome-card-logo" />
+                                <ui:VisualElement class="welcome-card-line" />
+                            </ui:VisualElement>
+                            <ui:Label text="кэшбэк" class="welcome-cashback" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:Label text="Учись.&#10;Играй.&#10;Зарабатывай." class="welcome-title" />
-                    <ui:Label text="Изучай финансы через вопросы и пробуй себя на виртуальной бирже." class="entry-copy" />
+                    <ui:VisualElement class="welcome-title">
+                        <ui:Label text="Учись." class="welcome-title-line" />
+                        <ui:Label text="Играй." class="welcome-title-line" />
+                        <ui:Label text="Зарабатывай." class="welcome-title-line welcome-title-accent" />
+                    </ui:VisualElement>
+                    <ui:Label text="Узнавай всё о банковских продуктах через игру — и получай награды за прогресс!" class="entry-copy welcome-copy" />
                 </ui:VisualElement>
                 <ui:VisualElement class="welcome-footer">
                     <ui:VisualElement class="welcome-benefits">
                         <ui:VisualElement class="welcome-benefit">
-                            <ui:Label text="КВИЗ" class="welcome-benefit-number" />
-                            <ui:Label text="вопросы" class="welcome-benefit-caption" />
+                            <ui:VisualElement class="welcome-benefit-icon welcome-gamepad-icon" />
+                            <ui:Label text="15+" class="welcome-benefit-number" />
+                            <ui:Label text="квестов" class="welcome-benefit-caption" />
                         </ui:VisualElement>
                         <ui:VisualElement class="welcome-benefit">
-                            <ui:Label text="10K" class="welcome-benefit-number" />
-                            <ui:Label text="вирт. капитал" class="welcome-benefit-caption" />
+                            <ui:VisualElement class="welcome-benefit-icon welcome-coin-icon" />
+                            <ui:Label text="5K" class="welcome-benefit-number" />
+                            <ui:Label text="монет старт" class="welcome-benefit-caption" />
                         </ui:VisualElement>
                         <ui:VisualElement class="welcome-benefit">
+                            <ui:Label text="🏆" class="welcome-benefit-emoji" />
                             <ui:Label text="ТОП" class="welcome-benefit-number" />
                             <ui:Label text="рейтинг" class="welcome-benefit-caption" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:Button name="start-btn" text="Начать игру →" class="entry-primary" />
                     <ui:Button name="login-btn" text="Уже есть аккаунт? Войти" class="entry-link" />
+                    <ui:Button name="back-game-btn" text="Вернуться в игру →" class="entry-primary" style="display: none;" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:ScrollView>
+        <ui:VisualElement name="welcome-tour" class="welcome-tour" style="display: none;">
+            <ui:VisualElement class="welcome-tour-header">
+                <ui:Label text="Приветствие" class="welcome-tour-kicker" />
+                <ui:Label name="tour-step" text="1 из 5" class="welcome-tour-step" />
+                <ui:VisualElement class="welcome-tour-progress">
+                    <ui:VisualElement name="tour-progress-fill" class="welcome-tour-progress-fill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="welcome-tour-body">
+                <ui:VisualElement class="welcome-tour-art">
+                    <ui:Label name="tour-symbol" text="★" class="welcome-tour-symbol" />
+                </ui:VisualElement>
+                <ui:Label name="tour-title" text="Двигайся по дорожке знаний" class="welcome-tour-title" />
+                <ui:Label name="tour-copy" text="Каждый шаг — новый урок о банковских продуктах." class="welcome-tour-copy" />
+            </ui:VisualElement>
+            <ui:VisualElement class="welcome-tour-footer">
+                <ui:Button name="tour-back" text="В игру" class="welcome-tour-back" />
+                <ui:Button name="tour-next" text="Продолжить →" class="welcome-tour-next" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

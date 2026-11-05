@@ -60,6 +60,7 @@ namespace IVR.UI
             Root.Q<Button>("games-market").clicked += () => Navigate(HubTab.Market);
             Root.Q<Button>("profile-market").clicked += () => Navigate(HubTab.Market);
             Root.Q<Button>("profile-interests-button").clicked += () => ScreenManager.Instance.ShowInterests();
+            Root.Q<Button>("profile-welcome").clicked += () => ScreenManager.Instance.Show(AppScreen.Welcome);
             Root.Q<Button>("profile-logout").clicked += Logout;
             Root.Q<Button>("top-streak").clicked += OpenStreakRewards;
             Root.Q<Button>("top-coins").clicked += OpenCoinShop;
@@ -92,7 +93,15 @@ namespace IVR.UI
                 if (_hasPendingLessons && !_learningRefreshInFlight && _activeTab == HubTab.Learn &&
                     IvrApi.Auth.IsLoggedIn) _ = RefreshPersonalLessons();
             }).Every(3000);
-            Root.Q<ScrollView>("hub-scroll").RegisterCallback<GeometryChangedEvent>(_ => ResizeHomePage());
+            var hubScroll = Root.Q<ScrollView>("hub-scroll");
+            hubScroll.mode = ScrollViewMode.Vertical;
+            hubScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            hubScroll.horizontalScroller.style.display = DisplayStyle.None;
+            hubScroll.RegisterCallback<GeometryChangedEvent>(_ => ResizeHomePage());
+            var homeLevelScroll = Root.Q<ScrollView>("home-level-scroll");
+            homeLevelScroll.mode = ScrollViewMode.Vertical;
+            homeLevelScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            homeLevelScroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             RenderMiniGames();
         }
 
@@ -153,6 +162,14 @@ namespace IVR.UI
 
             Root.Q<VisualElement>("hub-nav").style.display =
                 tab == HubTab.Market ? DisplayStyle.None : DisplayStyle.Flex;
+            // Старые импортированные версии UXML могли не иметь name у верхней панели,
+            // поэтому оставляем поиск по классу как безопасный запасной вариант.
+            var topbar = Root.Q<VisualElement>("hub-topbar") ??
+                         Root.Q<VisualElement>(className: "hub-topbar");
+            if (topbar != null)
+                topbar.style.display = tab == HubTab.Learn
+                    ? DisplayStyle.None
+                    : DisplayStyle.Flex;
 
             Root.Q<ScrollView>("hub-scroll").scrollOffset = Vector2.zero;
             if (tab == HubTab.Home)
@@ -244,47 +261,78 @@ namespace IVR.UI
         {
             var container = Root.Q<VisualElement>("home-topic-list");
             container.Clear();
-            for (var index = 0; index < LessonCatalog.All.Count; index++)
+            var mascot = new VisualElement();
+            mascot.AddToClassList("hub-home-path-mascot");
+            container.Add(mascot);
+
+            var visibleLessonCount = Math.Min(5, LessonCatalog.All.Count);
+            const int homeNodeCount = 12;
+            for (var index = 0; index < homeNodeCount; index++)
             {
-                var lesson = LessonCatalog.All[index];
-                var captured = lesson;
-                var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
-                var button = new Button(() =>
+                var hasLesson = index < visibleLessonCount;
+                Button button;
+                if (hasLesson)
                 {
-                    _selectedHomeLesson = captured;
-                    UpdateHomeLessonHeader();
-                    RenderHomeLessonPath();
-                });
+                    var lesson = LessonCatalog.All[index];
+                    var captured = lesson;
+                    var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
+                    button = new Button(() =>
+                    {
+                        _selectedHomeLesson = captured;
+                        UpdateHomeLessonHeader();
+                        RenderHomeLessonPath();
+                    });
+                    if (done) button.AddToClassList("hub-level-node-done");
+                    if (_selectedHomeLesson != null && _selectedHomeLesson.Id == lesson.Id)
+                        button.AddToClassList("hub-level-node-selected");
+                    button.tooltip = (index + 1) + ". " + lesson.Title;
+                    button.text = done ? "✓" : string.Empty;
+                }
+                else
+                {
+                    button = new Button();
+                    button.AddToClassList("hub-level-node-placeholder");
+                    button.tooltip = "Уровень " + (index + 1) + " · скоро";
+                    button.text = string.Empty;
+                }
+
                 button.AddToClassList("hub-level-node");
-                button.AddToClassList("hub-level-node-" + (index % 4));
-                if (done) button.AddToClassList("hub-level-node-done");
-                if (_selectedHomeLesson != null && _selectedHomeLesson.Id == lesson.Id)
-                    button.AddToClassList("hub-level-node-selected");
-                button.tooltip = (index + 1) + ". " + lesson.Title;
-                button.text = done ? "✓" : string.Empty;
+                button.AddToClassList("hub-level-node-" + (index % 8));
                 container.Add(button);
             }
         }
 
         private void RenderLessons()
         {
-            RenderTopicButtons("lesson-topic-list", "hub-lesson-card", false);
-        }
-
-        private void RenderTopicButtons(string containerName, string className, bool compact)
-        {
-            var container = Root.Q<VisualElement>(containerName);
+            var container = Root.Q<VisualElement>("lesson-topic-list");
             container.Clear();
-            for (var index = 0; index < LessonCatalog.All.Count; index++)
+            var visibleTopicCount = Math.Min(4, LessonCatalog.All.Count);
+            for (var index = 0; index < visibleTopicCount; index++)
             {
                 var lesson = LessonCatalog.All[index];
                 var done = _profile != null && LessonCatalog.IsCompleted(_profile.id, lesson.Id);
                 var captured = lesson;
                 var button = new Button(() => OpenLesson(captured));
-                button.AddToClassList(className);
-                button.text = compact
-                    ? (done ? "✓  " : "○  ") + (index + 1).ToString("00") + "   " + lesson.Title + "    →"
-                    : lesson.Title + (done ? "   ·   Пройдено ✓" : "   ·   Читать →");
+                button.AddToClassList("hub-encyclopedia-card");
+                if (done) button.AddToClassList("hub-encyclopedia-card-done");
+
+                var icon = new VisualElement();
+                icon.AddToClassList("hub-encyclopedia-icon");
+                icon.AddToClassList("hub-encyclopedia-icon-" + lesson.Key);
+
+                var copy = new VisualElement();
+                copy.AddToClassList("hub-encyclopedia-copy");
+
+                var title = new Label(lesson.Title);
+                title.AddToClassList("hub-encyclopedia-card-title");
+
+                var progress = new Label(done ? "Урок пройден ✓" : "Открыть урок");
+                progress.AddToClassList("hub-encyclopedia-card-progress");
+
+                copy.Add(title);
+                copy.Add(progress);
+                button.Add(icon);
+                button.Add(copy);
                 container.Add(button);
             }
         }

@@ -3,7 +3,7 @@
     <Style src="project://database/Assets/UI/Styles/Hub.uss?fileID=7433441132597879392&amp;guid=9317b0bb0e4a458ba3cae1ea5db3b068&amp;type=3" />
     <ui:VisualElement name="HubScreen" class="hub-screen">
         <ui:VisualElement class="hub-shell">
-            <ui:VisualElement class="hub-topbar">
+            <ui:VisualElement name="hub-topbar" class="hub-topbar">
                 <ui:VisualElement class="hub-brand">
                     <ui:Label text="A" class="hub-logo" />
                     <ui:Label text="Игра о финансах" class="hub-brand-text" />
@@ -21,54 +21,47 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:ScrollView name="hub-scroll" class="hub-scroll">
+            <ui:ScrollView name="hub-scroll" mode="Vertical" class="hub-scroll">
                 <ui:VisualElement name="tab-home" class="hub-page hub-home-page">
                     <ui:VisualElement name="home-fixed-panel" class="hub-home-fixed-panel">
-                        <ui:VisualElement class="hub-greeting-row">
-                            <ui:VisualElement>
-                                <ui:Label name="home-greeting" text="Привет!" class="hub-title" />
-                                <ui:Label text="Продолжим путь к финансовым знаниям?" class="hub-subtitle" />
+                        <ui:VisualElement class="hub-home-level-card">
+                            <ui:VisualElement class="hub-home-level-copy">
+                                <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
+                                <ui:Label name="home-selected-title" text="Накопления" class="hub-feature-title" />
+                                <ui:Label name="home-selected-summary" text="Как приблизиться к денежной цели" class="hub-home-service-label" />
                             </ui:VisualElement>
-                            <ui:Button name="home-avatar" text="А" class="hub-avatar" />
+                            <ui:Button name="home-start-quiz" text="▦" tooltip="Открыть выбранный урок" class="hub-home-level-action" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="hub-feature hub-home-feature">
-                            <ui:Label name="home-level" text="УРОВЕНЬ 1" class="hub-feature-eyebrow" />
-                            <ui:Label name="home-selected-title" text="Накопления" class="hub-feature-title" />
-                            <ui:Label name="home-selected-summary" text="Как приблизиться к денежной цели" class="hub-feature-copy" />
-                            <ui:Button name="home-start-quiz" text="Открыть урок →" class="hub-feature-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="hub-stats-row hub-home-stats">
-                            <ui:VisualElement class="hub-stat">
-                                <ui:Label name="home-score" text="0" class="hub-stat-value" />
-                                <ui:Label text="очков знаний" class="hub-stat-label" />
-                            </ui:VisualElement>
-                            <ui:VisualElement class="hub-stat">
-                                <ui:Label name="home-lessons" text="0/11" class="hub-stat-value" />
-                                <ui:Label text="тем пройдено" class="hub-stat-label" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:Label text="Дорожка уроков" class="hub-section-title hub-home-path-title" />
-                        <ui:Label text="Нажми на кружок, чтобы выбрать тему" class="hub-muted hub-path-help" />
+                        <!-- Эти элементы нужны существующей логике обновления профиля, но в макете главной не показываются. -->
+                        <ui:Label name="home-greeting" text="Привет!" style="display: none;" />
+                        <ui:Button name="home-avatar" text="А" style="display: none;" />
+                        <ui:Label name="home-score" text="0" style="display: none;" />
+                        <ui:Label name="home-lessons" text="0/11" style="display: none;" />
                     </ui:VisualElement>
-                    <ui:ScrollView name="home-level-scroll" class="hub-level-scroll">
-                        <ui:VisualElement name="home-topic-list" class="hub-level-path" />
-                    </ui:ScrollView>
+                    <ui:VisualElement class="hub-home-path-stage">
+                        <ui:ScrollView name="home-level-scroll" class="hub-level-scroll">
+                            <ui:VisualElement name="home-topic-list" class="hub-level-path" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
                 </ui:VisualElement>
 
-                <ui:VisualElement name="tab-learn" class="hub-page">
-                    <ui:Label text="Твои уроки" class="hub-title" />
-                    <ui:Label text="Разборы ошибок и темы для закрепления" class="hub-subtitle" />
-                    <ui:VisualElement name="lesson-list" class="hub-list">
-                        <ui:Button name="learning-diagnostic" text="Пройти вводный тест →" class="hub-primary" style="display: none;" />
-                        <ui:Label name="learning-knowledge" text="" class="hub-muted" />
-                        <ui:VisualElement class="hub-section-row">
-                            <ui:Label text="Лично для тебя" class="hub-section-title" />
-                            <ui:Button name="learning-refresh" text="Обновить" class="hub-text-button" />
+                <ui:VisualElement name="tab-learn" class="hub-page hub-learn-page">
+                    <ui:VisualElement name="lesson-list" class="hub-encyclopedia">
+                        <ui:VisualElement class="hub-encyclopedia-hero">
+                            <ui:VisualElement class="hub-encyclopedia-heading">
+                                <ui:Label text="Энциклопедия" class="hub-encyclopedia-title" />
+                                <ui:Label text="Все темы в одном месте" class="hub-encyclopedia-subtitle" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="hub-encyclopedia-mascot" />
                         </ui:VisualElement>
-                        <ui:Label name="learning-status" text="" class="hub-muted" />
-                        <ui:VisualElement name="personal-lesson-list" class="hub-list" />
-                        <ui:Label text="Все темы" class="hub-section-title" />
-                        <ui:VisualElement name="lesson-topic-list" class="hub-list" />
+                        <ui:VisualElement name="lesson-topic-list" class="hub-encyclopedia-list" />
+
+                        <!-- Служебные элементы сохранены скрытыми: они нужны существующей логике обновления. -->
+                        <ui:Button name="learning-diagnostic" text="" style="display: none;" />
+                        <ui:Label name="learning-knowledge" text="" style="display: none;" />
+                        <ui:Button name="learning-refresh" text="" style="display: none;" />
+                        <ui:Label name="learning-status" text="" style="display: none;" />
+                        <ui:VisualElement name="personal-lesson-list" style="display: none;" />
                     </ui:VisualElement>
                     <ui:VisualElement name="lesson-detail" class="hub-lesson-detail" style="display: none;">
                         <ui:Button name="lesson-back" text="‹  Все темы" class="hub-text-button" />
@@ -179,6 +172,7 @@
                     <ui:Button name="profile-quiz" text="Пройти квиз →" class="hub-primary" />
                     <ui:Button name="profile-market" text="Открыть биржу" class="hub-outline" />
                     <ui:Button name="profile-interests-button" text="Изменить интересы" class="hub-outline" />
+                    <ui:Button name="profile-welcome" text="Посмотреть приветствие ещё раз" class="hub-outline" />
                     <ui:Button name="profile-logout" text="Выйти из аккаунта" class="hub-text-button hub-logout" />
                 </ui:VisualElement>
 
@@ -211,12 +205,12 @@
             </ui:ScrollView>
 
             <ui:VisualElement name="hub-nav" class="hub-nav">
-                <ui:Button name="nav-home" text="Главная" class="hub-nav-button" />
-                <ui:Button name="nav-learn" text="Уроки" class="hub-nav-button" />
-                <ui:Button name="nav-minigames" text="Игры" class="hub-nav-button" />
-                <ui:Button name="nav-quests" text="Задания" class="hub-nav-button" />
-                <ui:Button name="nav-rating" text="Рейтинг" class="hub-nav-button" />
-                <ui:Button name="nav-profile" text="Профиль" class="hub-nav-button" />
+                <ui:Button name="nav-home" text="⌂" tooltip="Главная" class="hub-nav-button" />
+                <ui:Button name="nav-learn" text="▤" tooltip="Уроки" class="hub-nav-button" />
+                <ui:Button name="nav-minigames" text="▶" tooltip="Игры" class="hub-nav-button" />
+                <ui:Button name="nav-quests" text="✓" tooltip="Задания" class="hub-nav-button" />
+                <ui:Button name="nav-rating" text="★" tooltip="Рейтинг" class="hub-nav-button" />
+                <ui:Button name="nav-profile" text="●" tooltip="Профиль" class="hub-nav-button" />
             </ui:VisualElement>
         </ui:VisualElement>
 
