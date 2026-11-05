@@ -1,6 +1,6 @@
 # Spring API и PostgreSQL
 
-Сервер банковской игры: Spring Boot 4.1.0, Kotlin 2.3.21, Java 21, Spring Security/JWT, JPA и PostgreSQL 16. [Общая архитектура](../ARCHITECTURE.md), [персональное обучение](PERSONAL_LEARNING.md), [CI/CD](../docs/CI_CD.md).
+Сервер банковской игры: Spring Boot 4.1.0, Kotlin 2.3.21, Java 21, Spring Security/JWT, JPA и PostgreSQL 16. Персональные истории создаёт внутренний [FinStory-сервис](../FinStory_service/README.md). [Общая архитектура](../ARCHITECTURE.md), [персональное обучение](PERSONAL_LEARNING.md), [CI/CD](../docs/CI_CD.md).
 
 ## Локальный запуск
 
@@ -27,7 +27,7 @@ cd /home/ushan/IVR_PROJECT/Kotlin_spring_project
 docker compose ps
 ```
 
-Тесты Spring работают на H2. Для остановки сервера нажмите Ctrl+C, для остановки БД выполните `docker compose down`. Данные сохраняются в Docker volume.
+Тесты Spring работают на H2. Для остановки сервера нажмите Ctrl+C, для остановки БД, WebGL и FinStory выполните `docker compose down`. Данные сохраняются в Docker volume.
 
 ### Ошибка `password authentication failed for user "ivr"`
 
@@ -55,6 +55,8 @@ PY
 | `jwt.secret` | Подпись JWT, минимум 32 символа |
 | `ml.service.url` | Адрес классификатора интересов; при недоступности возвращается `другое` |
 | `GEMINI_API_KEY`, `GEMINI_MODEL` | Необязательная генерация текста уроков; без них действует fallback |
+| `FINSTORY_URL` | Внутренний адрес FinStory; `run-local.sh` выставляет `http://127.0.0.1:8000` |
+| `FINSTORY_INTERNAL_TOKEN` | Общий секрет между Spring и FinStory |
 | `learning.generation-delay-ms` | Интервал обработки уроков `PENDING`, по умолчанию 5000 мс |
 | `DAILY_ZONE` | Часовой пояс ежедневной серии и заданий, по умолчанию `Europe/Moscow` |
 

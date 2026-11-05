@@ -4,12 +4,13 @@
 
 Workflow `.github/workflows/ci-cd.yml` работает при pull request, push в `main`, теге `v*` и ручном запуске.
 
-1. Устанавливает Java 21 и проверяет Gradle Wrapper.
-2. Запускает все тесты Spring на H2 командой `./gradlew test --no-daemon`.
-3. Сохраняет HTML-отчёт тестов на 14 дней.
-4. Собирает production Docker-образ backend.
-5. После push в `main` или тега публикует образ в GitHub Container Registry:
-   `ghcr.io/ushan4ik/alfa-ivr-financial-game-backend`.
+1. Запускает тесты FinStory на Python 3.12.
+2. Устанавливает Java 21 и запускает все тесты Spring на H2.
+3. Сохраняет HTML-отчёт Spring-тестов на 14 дней.
+4. Собирает production Docker-образы backend и FinStory.
+5. После push в `main` или тега публикует образы в GitHub Container Registry:
+   `ghcr.io/ushan4ik/alfa-ivr-financial-game-backend` и
+   `ghcr.io/ushan4ik/alfa-ivr-financial-game-finstory`.
 
 Для pull request образ только собирается и не публикуется. Поэтому код из внешнего PR не получает право записи в registry.
 
@@ -23,7 +24,11 @@ Workflow `.github/workflows/ci-cd.yml` работает при pull request, pus
 | `JWT_SECRET` | случайная строка длиной от 32 байт для подписи JWT |
 | `CORS_ALLOWED_ORIGINS` | адрес опубликованной игры, например `https://game.example.ru` |
 
-Дополнительно используются `DATABASE_URL`, `DB_USER`, `IVR_ADMIN_EMAILS`, `ML_SERVICE_URL`, `GEMINI_API_KEY` и `GEMINI_MODEL`.
+Дополнительно используются `DATABASE_URL`, `DB_USER`, `IVR_ADMIN_EMAILS`, `FINSTORY_URL`,
+`FINSTORY_INTERNAL_TOKEN`, `ML_SERVICE_URL`, `GEMINI_API_KEY` и `GEMINI_MODEL`.
+
+Yandex-секреты передаются только контейнеру FinStory: `YANDEX_API_KEY`, `YANDEX_FOLDER_ID`
+и `FINSTORY_YANDEX_MODEL`. Они не должны попадать в Unity, Spring-ответы или Docker-образ.
 
 Пример запуска опубликованного образа:
 

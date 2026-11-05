@@ -1,4 +1,24 @@
 services:
+  finstory:
+    build:
+      context: ../FinStory_service
+    container_name: ivr-finstory
+    restart: unless-stopped
+    environment:
+      FINSTORY_DEMO: ${FINSTORY_DEMO:-1}
+      FINSTORY_INTERNAL_TOKEN: ${FINSTORY_INTERNAL_TOKEN:?Set FINSTORY_INTERNAL_TOKEN in .env}
+      YANDEX_API_KEY: ${YANDEX_API_KEY:-}
+      YANDEX_FOLDER_ID: ${YANDEX_FOLDER_ID:-}
+      FINSTORY_YANDEX_MODEL: ${FINSTORY_YANDEX_MODEL:-aliceai-llm}
+      FINSTORY_TERM_MODEL: ${FINSTORY_TERM_MODEL:-0}
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/internal/v1/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+
   db:
     image: postgres:16-alpine
     container_name: ivr-postgres

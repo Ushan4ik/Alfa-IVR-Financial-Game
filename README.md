@@ -2,7 +2,7 @@
 
 [![CI and delivery](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml)
 
-Проект состоит из Unity-клиента и Spring Boot API с PostgreSQL. Игрок регистрируется, проходит вводный квиз, изучает финансовые темы, получает персональный разбор и может играть на учебном рынке акций.
+Проект состоит из Unity-клиента, Spring Boot API, PostgreSQL и внутреннего FinStory-сервиса. Игрок регистрируется, проходит вводный квиз, изучает финансовые темы, получает персональную историю и может играть на учебном рынке акций.
 
 ## Документация
 
@@ -14,6 +14,7 @@
 - [Все Unity-скрипты](Unity_WEB_A_IVR/UNITY_SCRIPTS.md) — разбор каждого C#-файла, контроллеров и связей между ними.
 - [Spring API](Kotlin_spring_project/README.md) — локальный запуск, настройки, API и тесты.
 - [Персональное обучение](Kotlin_spring_project/PERSONAL_LEARNING.md) — квиз, генерация разбора и повторная попытка.
+- [FinStory](FinStory_service/README.md) — генерация историй, интересы, термины и режимы запуска.
 - [Пользовательские сценарии и UML](docs/README.md) — сценарии, Use Case, классы, последовательности, ER- и объектная диаграммы.
 - [Техническое задание](docs/TECHNICAL_SPECIFICATION.md) — границы продукта и проверяемые требования.
 - [CI/CD](docs/CI_CD.md) — автоматические тесты, Docker-образ backend и ручная WebGL-сборка.
@@ -30,7 +31,9 @@ cp .env.example .env
 set -a
 source .env
 set +a
-docker compose up -d --wait db
+docker compose up -d --wait db finstory
+export FINSTORY_URL=http://127.0.0.1:8000
+export ML_SERVICE_URL=$FINSTORY_URL
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 

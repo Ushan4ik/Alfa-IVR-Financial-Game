@@ -15,8 +15,12 @@ set -a
 source .env
 set +a
 
-docker compose up -d --wait db web
+docker compose up -d --wait db web finstory
 echo "Unity WebGL: http://localhost:8081"
+echo "FinStory: http://localhost:8000/internal/v1/health"
+
+export FINSTORY_URL="${FINSTORY_URL:-http://127.0.0.1:8000}"
+export ML_SERVICE_URL="${ML_SERVICE_URL:-$FINSTORY_URL}"
 
 if ss -ltnH 'sport = :8080' | rg -q '.'; then
   http_code="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/market/state || true)"

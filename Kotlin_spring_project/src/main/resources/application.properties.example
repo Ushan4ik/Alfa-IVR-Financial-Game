@@ -23,6 +23,8 @@ security.bootstrap-admin-emails=${IVR_ADMIN_EMAILS:}
 
 # --- ML Service (Python FastAPI) ------------
 ml.service.url=http://localhost:8000
+learning.finstory.url=${FINSTORY_URL:}
+learning.finstory.token=${FINSTORY_INTERNAL_TOKEN:}
 
 # Optional server-side personalized explanations.
 learning.gemini.key=${GEMINI_API_KEY:}
