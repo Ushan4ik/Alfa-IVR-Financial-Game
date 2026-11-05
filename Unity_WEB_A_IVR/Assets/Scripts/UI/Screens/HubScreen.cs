@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IVR;
+using IVR.Api;
 using IVR.Game;
 using IVR.Models;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace IVR.UI
         private LessonDefinition _selectedLesson;
         private PersonalLessonDto _selectedPersonalLesson;
         private int _learningRequestVersion;
+        private int _topicStoryRequestVersion;
         private string _pendingPersonalLessonId;
         private bool _hasPendingLessons;
         private bool _learningRefreshInFlight;
@@ -214,13 +216,44 @@ namespace IVR.UI
         private void OpenLesson(LessonDefinition lesson)
         {
             Navigate(HubTab.Learn);
+            var requestVersion = ++_topicStoryRequestVersion;
             _selectedLesson = lesson;
             _selectedPersonalLesson = null;
             Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;
             Root.Q<VisualElement>("lesson-detail").style.display = DisplayStyle.Flex;
             Root.Q<Label>("lesson-title").text = lesson.Title;
-            Root.Q<Label>("lesson-summary").text = lesson.Summary;
+            Root.Q<Label>("lesson-summary").text = lesson.Summary + " · история по твоим интересам";
             RenderCatalogLessonContent(lesson);
+            Root.Q<Label>("lesson-story").text = "Создаём персональную историю по твоим интересам и ответам…";
+            ShowLessonStoryStep();
+            Root.Q<Button>("lesson-story-next").SetEnabled(false);
+            _ = LoadTopicStory(lesson, requestVersion);
+        }
+
+        private async Task LoadTopicStory(LessonDefinition lesson, int requestVersion)
+        {
+            ApiResult<PersonalLessonDto> result;
+            try
+            {
+                result = await IvrApi.Learning.TopicStory(lesson.Id);
+            }
+            catch (Exception)
+            {
+                result = ApiResult<PersonalLessonDto>.Fail("Не удалось загрузить историю");
+            }
+
+            if (requestVersion != _topicStoryRequestVersion || _selectedLesson != lesson) return;
+            if (result.Success && result.Data != null && !string.IsNullOrWhiteSpace(result.Data.story))
+            {
+                RenderPersonalLessonContent(result.Data);
+                Root.Q<Label>("lesson-summary").text = lesson.Summary + " · создано по твоим интересам";
+            }
+            else
+            {
+                RenderCatalogLessonContent(lesson);
+                Root.Q<Label>("lesson-summary").text = lesson.Summary + " · история без персонализации";
+            }
+            Root.Q<Button>("lesson-story-next").SetEnabled(true);
             ShowLessonStoryStep();
         }
 
@@ -238,6 +271,7 @@ namespace IVR.UI
 
         private void CloseLesson()
         {
+            _topicStoryRequestVersion++;
             _selectedLesson = null;
             _selectedPersonalLesson = null;
             Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.Flex;
@@ -305,6 +339,7 @@ namespace IVR.UI
 
         private void OpenPersonalLesson(PersonalLessonDto lesson)
         {
+            _topicStoryRequestVersion++;
             _selectedLesson = null;
             _selectedPersonalLesson = lesson;
             Root.Q<VisualElement>("lesson-list").style.display = DisplayStyle.None;

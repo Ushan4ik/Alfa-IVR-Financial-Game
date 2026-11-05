@@ -15,6 +15,9 @@ class LearningController(private val service: LearningService) {
     fun finish(auth: Authentication, @PathVariable id: String) = service.finish(auth.principal as String, id)
     @GetMapping("/lessons")
     fun lessons(auth: Authentication) = service.list(auth.principal as String)
+    @PostMapping("/topics/{id}/story")
+    fun topicStory(auth: Authentication, @PathVariable id: String) =
+        service.topicStory(auth.principal as String, id)
     @GetMapping("/profile")
     fun profile(auth: Authentication) = service.profile(auth.principal as String)
 }

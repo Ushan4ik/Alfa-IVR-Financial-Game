@@ -114,6 +114,13 @@ class LearningService(
             c.story, c.takeaway, c.character, c.terms, c.source, c.modelVersion)
     }
 
+    fun topicStory(playerId: String, topicId: String): LessonContent {
+        if (LearningCatalog.topics.none { it.id == topicId }) bad("Неизвестная тема")
+        if (!players.existsById(playerId)) missing()
+        return generator.preview(playerId, topicId)
+            ?: throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "История временно недоступна")
+    }
+
     @Transactional(readOnly = true)
     fun profile(playerId: String): LearningProfile {
         val history = finished(playerId)

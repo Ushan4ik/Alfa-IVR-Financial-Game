@@ -20,6 +20,9 @@ namespace IVR.Api.Services
             Parse<LearningFinishDto>(await _client.Post("/learning/attempts/" + id + "/finish", new LearningEmptyRequest()));
         public async Task<ApiResult<LearningProfileDto>> Profile() =>
             Parse<LearningProfileDto>(await _client.Get("/learning/profile"));
+        public async Task<ApiResult<PersonalLessonDto>> TopicStory(string topicId) =>
+            Parse<PersonalLessonDto>(await _client.Post(
+                "/learning/topics/" + topicId + "/story", new LearningEmptyRequest()));
         public async Task<ApiResult<List<PersonalLessonDto>>> Lessons()
         {
             var result = await _client.Get("/learning/lessons");
