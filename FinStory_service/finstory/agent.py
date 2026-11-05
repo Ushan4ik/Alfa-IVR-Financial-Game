@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 from urllib.request import Request, urlopen
 
 
@@ -43,6 +44,7 @@ class StoryAgent:
             "model": self.model if self.model.startswith("gpt://") else f"gpt://{self.folder}/{self.model}",
             "instructions": (
                 "Пиши связную реалистичную историю финансового выбора для подростка. "
+                "Длина истории — 750–1000 знаков, 4–6 коротких абзацев. Более короткий текст недопустим. "
                 "Используй только проверенный материал из входных данных. Интересы влияют на детали, "
                 "а ошибки пользователя — на то, какой выбор нужно разобрать. Сохраняй героя и прошлые события. "
                 "Глава должна содержать цель, ограничение, выбор и последствие. Не выдумывай реальные банковские "
@@ -109,47 +111,75 @@ class StoryAgent:
             "required": ["story", "takeaway", "character", "hints"],
             "additionalProperties": False,
         }
-        result = self.ask(task, schema)
-        story = result["story"].strip()
-        takeaway = result["takeaway"].strip()
-        character = result["character"]
-        if not 120 <= len(story) <= 1200:
-            raise ValueError("Generated story has invalid length")
-        if not takeaway or len(takeaway) > 400:
-            raise ValueError("Generated takeaway has invalid length")
-        expected_character = task.get("character")
-        if expected_character and character != expected_character:
-            raise ValueError("Character continuity was not preserved")
-        return {
-            "story": story,
-            "takeaway": takeaway,
-            "character": character,
-            "hints": safe_hints(story, term_names, result.get("hints", [])),
-            "source": "yandex",
-        }
+        last_error = None
+        for attempt in range(2):
+            try:
+                result = self.ask(task, schema)
+                story = result["story"].strip()
+                takeaway = result["takeaway"].strip()
+                character = result["character"]
+                if not 650 <= len(story) <= 1200:
+                    raise ValueError("Generated story has invalid length")
+                if not takeaway or len(takeaway) > 400:
+                    raise ValueError("Generated takeaway has invalid length")
+                expected_character = task.get("character")
+                if expected_character and character != expected_character:
+                    raise ValueError("Character continuity was not preserved")
+                return {
+                    "story": story,
+                    "takeaway": takeaway,
+                    "character": character,
+                    "hints": safe_hints(story, term_names, result.get("hints", [])),
+                    "source": "yandex",
+                }
+            except (RuntimeError, ValueError, OSError) as exc:
+                last_error = exc
+                if attempt == 0:
+                    time.sleep(0.7)
+        raise RuntimeError("Yandex generation failed after retry") from last_error
 
 
 class DemoAgent:
+    def __init__(self, source: str = "demo"):
+        self.source = source
+
     def write(self, task: dict, term_names: list[str]) -> dict:
         character = task.get("character") or {
             "name": "Мира", "age": 17, "personality": "внимательная"
         }
         interest = task.get("primary_interest", "своими увлечениями")
+        lesson = str(task.get("lesson", "финансовый выбор")).strip()
+        material = str(task.get("verified_material", "")).strip()
         example = str(task.get("verified_example", "")).strip()
         mistakes = task.get("mistakes", [])
-        mistake_line = ""
+        mistake_line = "Сначала герой проверяет, какие данные уже известны, и не торопится с решением."
         if mistakes:
             item = mistakes[0]
-            mistake_line = f" Раньше {character['name']} выбрала вариант «{item.get('userAnswer', '')}», а теперь проверила расчёт ещё раз."
+            mistake_line = (
+                f"В прошлом задании {character['name']} выбрал(а) «{item.get('userAnswer', '')}». "
+                f"Теперь ответ сравнивается с вариантом «{item.get('correctAnswer', '')}», "
+                "чтобы понять причину ошибки и не повторить её в похожей ситуации."
+            )
+        recent_total = int(task.get("recent_total", 0) or 0)
+        recent_correct = int(task.get("recent_correct", 0) or 0)
+        progress = (f"В последних заданиях результат по этой теме — {recent_correct} из {recent_total}. "
+                    if recent_total else "Это первое подробное знакомство героя с этой темой. ")
         story = (
-            f"{character['name']} увлекается {interest} и решил(а) привести личные финансы в порядок. "
-            f"{example}{mistake_line} После сравнения вариантов был выбран более понятный и посильный план."
+            f"{character['name']}, {character['age']} лет, увлекается темой «{interest}». "
+            f"Сегодня перед героем стоит задача, связанная с темой «{lesson}»: нужно принять решение, "
+            "которое не помешает обычным расходам и приблизит личную цель.\n\n"
+            f"{progress}{mistake_line}\n\n"
+            f"Для проверки используется конкретный пример: {example} "
+            "Герой записывает числа и условия, сравнивает доступные варианты и отдельно отмечает, "
+            "какое последствие будет у каждого выбора.\n\n"
+            f"После расчёта {character['name']} выбирает понятный и посильный план. "
+            "Решение связано с личным интересом, но финансовое правило остаётся тем же: "
+            f"{material} Так герой получает не готовый совет, а способ самостоятельно проверить следующий выбор."
         )[:1200]
         return {
             "story": story,
-            "takeaway": str(task.get("verified_material", ""))[:400],
+            "takeaway": material[:400],
             "character": character,
             "hints": safe_hints(story, term_names, []),
-            "source": "demo",
+            "source": self.source,
         }
-

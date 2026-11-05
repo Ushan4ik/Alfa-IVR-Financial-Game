@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -9,6 +10,7 @@ from .interests import InterestModel, LABELS
 from .terms import DEFINITIONS, TERMS
 
 SERVICE_VERSION = "1.0.0"
+log = logging.getLogger(__name__)
 app = FastAPI(title="FinStory Internal API", version=SERVICE_VERSION, docs_url=None, redoc_url=None)
 
 
@@ -147,7 +149,14 @@ def generate_lesson(request: LessonRequest):
             for name in term_names
         ]
     except (RuntimeError, ValueError, OSError) as exc:
-        raise HTTPException(status_code=502, detail="lesson generation failed") from exc
+        if demo:
+            raise HTTPException(status_code=502, detail="lesson generation failed") from exc
+        log.warning("Yandex lesson generation failed; using personalized local fallback", exc_info=True)
+        result = DemoAgent(source="local-personalized").write(task, term_names)
+        terms = [
+            TERMS.explain(name, result["story"], result["hints"].get(name, []), weights)
+            for name in term_names
+        ]
     cheat_sheet = [request.verifiedMaterial]
     return LessonResponse(
         title=f"{request.title}: персональная история",
@@ -157,6 +166,5 @@ def generate_lesson(request: LessonRequest):
         terms=[TermResponse(**item) for item in terms],
         cheatSheet=cheat_sheet,
         source=result["source"],
-        modelVersion=("demo" if demo else StoryAgent().model),
+        modelVersion=(StoryAgent().model if result["source"] == "yandex" else result["source"]),
     )
-
