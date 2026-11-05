@@ -132,7 +132,6 @@
 
 .entry-shell {
     width: 100%;
-    max-width: 440px;
     min-height: 100%;
     flex-grow: 1;
     align-self: center;
