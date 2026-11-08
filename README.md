@@ -1,3 +1,9 @@
+https://youtu.be/eGuYalwFO4c
+
+ВИДЕОпоказ
+
+
+
 # Alfa-IVR — финансовая игра для молодёжи
 
 [![CI and delivery](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Ushan4ik/Alfa-IVR-Financial-Game/actions/workflows/ci-cd.yml)
