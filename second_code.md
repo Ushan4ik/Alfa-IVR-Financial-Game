@@ -1,4 +1,2 @@
 # Демонстрация проекта
-
-
-[Открыть видео с показом кода ](https://2359.hse.ru/igws/20582/edit)
+ https://youtu.be/eGuYalwFO4c
